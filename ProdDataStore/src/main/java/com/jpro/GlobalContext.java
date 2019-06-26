@@ -7,21 +7,21 @@ import java.io.FileInputStream;
 import java.util.Properties;
 
 @Log4j2
-public class GlobalContext {
+class GlobalContext {
     private Properties gProperties;
 
     private static GlobalContext unique;
 
     private GlobalContext() {}
 
-    public static synchronized GlobalContext getInstence() {
+    static synchronized GlobalContext getInstence() {
         if (unique == null) {
             unique = new GlobalContext();
         }
         return unique;
     }
 
-    public void load(String path) {
+    void load(String path) {
         if (gProperties != null) { return; }
         try {
             File fp = new File(path);
@@ -38,7 +38,7 @@ public class GlobalContext {
         }
     }
 
-    public Properties getProperties() {
+    Properties getProperties() {
         return gProperties;
     }
 }
