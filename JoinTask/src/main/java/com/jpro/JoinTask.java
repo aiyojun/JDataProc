@@ -21,10 +21,11 @@ public class JoinTask {
 		log.info("load global properties file: " + propertiesFile);
 		log.info("Check necessary properties");
 
+		/// 3. check necessary properties
 		var props = ctx.getProperties();
 		JComToo.checkProperty(props, "stream.filter.switch");
 		JComToo.checkProperty(props, "join.field");
-		JComToo.checkProperty(props, "join.demensions");
+		JComToo.checkProperty(props, "join.dimensions");
 		JComToo.checkProperty(props, "stream.main0.kafka.topic");
 		JComToo.checkProperty(props, "kafka.ip");
 		JComToo.checkProperty(props, "kafka.port");
@@ -38,7 +39,7 @@ public class JoinTask {
 			log.info("Look out! you opened [ filter mechanism ] .");
 		}
 		log.info("Join field: " + props.getProperty("join.field"));
-		if (props.getProperty("join.demensions").equals("2")) {
+		if (props.getProperty("join.dimensions").equals("2")) {
 			log.info("Join Mode: [ 1 - Kafka Stream ] + [ 2 - ES Tables ]");
 		}
 		log.info(ctx.getProperties().getProperty("stream.main0.kafka.topic"));
@@ -51,6 +52,7 @@ public class JoinTask {
 		log.info("Output es index/type - "
 				+ props.getProperty("output.es.index") + "/" + props.getProperty("output.es.type"));
 
+		/// 4. create main object
 		Joinner joinner = new Joinner();
 
 		Runtime.getRuntime().addShutdownHook(new Thread(() -> {
