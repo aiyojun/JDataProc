@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.Properties;
 
 @Log4j2
-public class JComToo {
+class JComToo {
     static List<String> parseCsv(String seq) {
         log.info("seq: " + seq);
         List<String> _r = new LinkedList<>();

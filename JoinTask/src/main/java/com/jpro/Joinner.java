@@ -23,7 +23,7 @@ import java.time.Duration;
 import java.util.*;
 
 @Log4j2
-public class Joinner {
+class Joinner {
     /**
      * inner necessary member variables
      */
@@ -73,6 +73,9 @@ public class Joinner {
                     new Integer(context.getProperty("output.es.port")), "http")));
     }
 
+    /**
+     * recycle & release all resources
+     */
     void close() {
         running = false;
         try {
@@ -83,6 +86,9 @@ public class Joinner {
         }
     }
 
+    /**
+     * parse json string
+     */
     private JsonNode parse(String data) {
         JsonNode root = null;
         try {
@@ -124,6 +130,9 @@ public class Joinner {
         return _r;
     }
 
+    /**
+     * cope with the data without the corresponding data of another one or two lines
+     */
     private void doExceptionalData(String _id, String record) {
         IndexRequest req = new IndexRequest(
                 context.getProperty("exception.es.index"),
@@ -141,6 +150,9 @@ public class Joinner {
         }
     }
 
+    /**
+     * do join operation
+     */
     private Map<String, Object> doJoin(JsonNode root, Map<String, Object> line1, Map<String, Object> line2) {
         Map<String, Object> _r = new HashMap<>();
         for (var iter = root.fields(); iter.hasNext();) {
@@ -168,6 +180,9 @@ public class Joinner {
         return _r;
     }
 
+    /**
+     * store the joined data
+     */
     private void storeJoinedData(String _id, Map<String, Object> json) {
         IndexRequest req = new IndexRequest(
                 context.getProperty("output.es.index"),
@@ -185,6 +200,9 @@ public class Joinner {
         }
     }
 
+    /**
+     * obtain corresponding data from es database
+     */
     private Map<String, Object> getLine1Record(String _id) {
         GetRequest req = new GetRequest(
                 context.getProperty("stream.line1.es.index"), context.getProperty("stream.line1.es.type"), _id);
@@ -197,6 +215,10 @@ public class Joinner {
         return null;
     }
 
+    /**
+     * another table
+     * obtain corresponding data from es database
+     */
     private Map<String, Object> getLine2Record(String _id) {
         GetRequest req = new GetRequest(
                 context.getProperty("stream.line2.es.index"), context.getProperty("stream.line2.es.type"), _id);
@@ -209,6 +231,9 @@ public class Joinner {
         return null;
     }
 
+    /**
+     * main loop of join task
+     */
     void main() {
         log.info("Enter Joinner process");
         init();
