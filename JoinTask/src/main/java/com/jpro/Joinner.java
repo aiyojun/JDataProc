@@ -5,9 +5,18 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.log4j.Log4j2;
 import lombok.var;
+import org.apache.http.HttpHost;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
+import org.elasticsearch.action.DocWriteResponse;
+import org.elasticsearch.action.get.GetRequest;
+import org.elasticsearch.action.get.GetResponse;
+import org.elasticsearch.action.index.IndexRequest;
+import org.elasticsearch.action.index.IndexResponse;
+import org.elasticsearch.client.RestClient;
+import org.elasticsearch.client.RestHighLevelClient;
+import org.elasticsearch.common.xcontent.XContentType;
 
 import java.io.IOException;
 import java.time.Duration;
@@ -15,7 +24,9 @@ import java.util.*;
 
 @Log4j2
 public class Joinner {
-
+    /**
+     * inner necessary member variables
+     */
     private boolean running = true;
 
     /**
@@ -26,28 +37,51 @@ public class Joinner {
     /**
      * Data source
      */
-    private int kafkaPort;
-    private String kafkaIp;
-    private String streamMain0GroupId;
-    private String streamLine1GroupId;
-    private String streamLine2GroupId;
-    private String streamMain0KafkaTopic;
-    private String streamLine1KafkaTopic;
-    private String streamLine2KafkaTopic;
-
-    /**
-     * Join logic
-     */
-    private String joinField;
-    private int joinDemenstions;
+    private RestHighLevelClient streamLine1Client;
+    private RestHighLevelClient streamLine2Client;
+    private KafkaConsumer<String, String> streamMain0Consumer;
 
     /**
      * Data storage
      */
-    private int esPort;
-    private String esIp;
-    private String esIndex;
-    private String esType;
+    private RestHighLevelClient storeClient;
+
+    private void init() {
+        /// kafka connections
+        Properties props = new Properties();
+        String kafkaUrl = context.getProperty("kafka.ip") + ":" + context.getProperty("kafka.port");
+        props.setProperty("bootstrap.servers", kafkaUrl);
+        props.setProperty("group.id", context.getProperty("stream.main0.group.id"));
+        props.setProperty("key.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");
+        props.setProperty("value.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");
+
+        streamMain0Consumer = new KafkaConsumer<>(props);
+        streamMain0Consumer.subscribe(Collections.singleton(context.getProperty("stream.main0.kafka.topic")));
+
+        /// es connections
+        streamLine1Client = new RestHighLevelClient(
+            RestClient.builder(
+                new HttpHost(context.getProperty("stream.line1.es.ip"),
+                    new Integer(context.getProperty("stream.line1.es.port")), "http")));
+        streamLine2Client = new RestHighLevelClient(
+            RestClient.builder(
+                new HttpHost(context.getProperty("stream.line2.es.ip"),
+                    new Integer(context.getProperty("stream.line2.es.port")), "http")));
+        storeClient = new RestHighLevelClient(
+            RestClient.builder(
+                new HttpHost(context.getProperty("output.es.ip"),
+                    new Integer(context.getProperty("output.es.port")), "http")));
+    }
+
+    void close() {
+        running = false;
+        try {
+            streamLine1Client.close();
+            streamLine2Client.close();
+        } catch (IOException ioe) {
+            log.error("When closing es connections, occur exception: " + ioe);
+        }
+    }
 
     private JsonNode parse(String data) {
         JsonNode root = null;
@@ -90,46 +124,146 @@ public class Joinner {
         return _r;
     }
 
-    private JsonNode doJoin(JsonNode root) {
-        JsonNode _r = root;
+    private void doExceptionalData(String _id, String record) {
+        IndexRequest req = new IndexRequest(
+                context.getProperty("exception.es.index"),
+                context.getProperty("exception.es.type"), _id);
+        req.source(record, XContentType.JSON);
+        try {
+            IndexResponse resp = storeClient.index(req);
+            if (resp.getResult() == DocWriteResponse.Result.NOOP) {
+                throw new RuntimeException("insert failed, response - NOOP");
+            } else if (resp.getResult() == DocWriteResponse.Result.NOT_FOUND) {
+                throw new RuntimeException("insert failed, response - NOT_FOUND");
+            }
+        } catch (IOException e) {
+            log.error("When index exceptional data, occur io exception: " + e);
+        }
+    }
 
+    private Map<String, Object> doJoin(JsonNode root, Map<String, Object> line1, Map<String, Object> line2) {
+        Map<String, Object> _r = new HashMap<>();
+        for (var iter = root.fields(); iter.hasNext();) {
+            var ele = iter.next();
+            if (ele.getValue().isTextual()) {
+                _r.put(ele.getKey(), ele.getValue().textValue());
+            } else if (ele.getValue().isNumber()) {
+                _r.put(ele.getKey(), ele.getValue().numberValue());
+            } else {
+                _r.put(ele.getKey(), ele.getValue());
+            }
+        }
+        line1.forEach((key, value) -> {
+            if (!key.equals(context.getProperty("join.field"))) {
+                _r.put(key, value);
+            }
+        });
+        if (line2 != null) {
+            line2.forEach((key, value) -> {
+                if (!key.equals(context.getProperty("join.field"))) {
+                    _r.put(key, value);
+                }
+            });
+        }
         return _r;
     }
 
-    private String getLine1Record(String val) {
+    private void storeJoinedData(String _id, Map<String, Object> json) {
+        IndexRequest req = new IndexRequest(
+                context.getProperty("output.es.index"),
+                context.getProperty("output.es.type"), _id);
+        req.source(json);
+        try {
+            IndexResponse resp = storeClient.index(req);
+            if (resp.getResult() == DocWriteResponse.Result.NOOP) {
+                throw new RuntimeException("insert failed, response - NOOP");
+            } else if (resp.getResult() == DocWriteResponse.Result.NOT_FOUND) {
+                throw new RuntimeException("insert failed, response - NOT_FOUND");
+            }
+        } catch (IOException e) {
+            log.error("When index joined data, occur io exception: " + e);
+        }
+    }
 
+    private Map<String, Object> getLine1Record(String _id) {
+        GetRequest req = new GetRequest(
+                context.getProperty("stream.line1.es.index"), context.getProperty("stream.line1.es.type"), _id);
+        try {
+            GetResponse resp = streamLine1Client.get(req);
+            return resp.getSource();
+        } catch (IOException ioe) {
+            log.error("When obtain stream line1 data, occur exception: " + ioe);
+        }
         return null;
     }
 
-    private String getLine2Record(String val) {
-
+    private Map<String, Object> getLine2Record(String _id) {
+        GetRequest req = new GetRequest(
+                context.getProperty("stream.line2.es.index"), context.getProperty("stream.line2.es.type"), _id);
+        try {
+            GetResponse resp = streamLine1Client.get(req);
+            return resp.getSource();
+        } catch (IOException ioe) {
+            log.error("When obtain stream line1 data, occur exception: " + ioe);
+        }
         return null;
     }
 
     void main() {
         log.info("Enter Joinner process");
-        Properties props = new Properties();
-        String kafkaUrl = context.getProperty("kafka.ip") + ":" + context.getProperty("kafka.port");
-        props.setProperty("bootstrap.servers", kafkaUrl);
-        props.setProperty("group.id", context.getProperty("kafka.group.id"));
-        props.setProperty("key.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");
-        props.setProperty("value.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");
-
-        KafkaConsumer<String, String> consumer = new KafkaConsumer<>(props);
-
+        init();
         while (running) {
             try {
-                ConsumerRecords<String, String> records = consumer.poll(Duration.ofMillis(1000));
+                ConsumerRecords<String, String> records = streamMain0Consumer.poll(Duration.ofMillis(1000));
                 if (records.count() == 0) continue;
                 log.info("Process data batch: " + records.count());
                 for (ConsumerRecord<String, String> record : records) {
-                    var json = parse(record.value());
-                    json = doFilter(json);
-                    json = doJoin(json);
+                    try {
+                        var json = parse(record.value());
+                        json = doFilter(json);
+                        String _id = json.path(context.getProperty("join.field")).toString();
+                        if (context.getProperty("join.dimensions").equals("2")) {
+                            Map<String, Object> line1Record = getLine1Record(_id);
+                            Map<String, Object> line2Record = getLine2Record(_id);
+                            if (line1Record != null && line2Record != null) {
+                                var result = doJoin(json, line1Record, line2Record);
+                                storeJoinedData(_id, result);
+                            } else {
+                                if (line1Record == null) {
+                                    log.warn("Cannot find data which "
+                                            + context.getProperty("join.field") + "=" + _id
+                                            + " from " + context.getProperty("stream.line1.es.index") + "/"
+                                            + context.getProperty("stream.line1.es.type"));
+                                } else {
+                                    log.warn("Cannot find data which "
+                                            + context.getProperty("join.field") + "=" + _id
+                                            + " from " + context.getProperty("stream.line2.es.index") + "/"
+                                            + context.getProperty("stream.line2.es.type"));
+                                }
+                                doExceptionalData(_id, record.value());
+                            }
+                        } else {
+                            Map<String, Object> line1Record = getLine1Record(_id);
+                            if (line1Record != null) {
+                                var result = doJoin(json, line1Record, null);
+                                storeJoinedData(_id, result);
+                            } else {
+                                log.warn("Cannot find data which "
+                                        + context.getProperty("join.field") + "=" + _id
+                                        + " from " + context.getProperty("stream.line1.es.index") + "/"
+                                        + context.getProperty("stream.line1.es.type"));
+                                doExceptionalData(_id, record.value());
+                            }
+                        }
+
+                    } catch (Exception e) {
+                        log.error(e);
+                    }
                 }
             } catch (Exception e) {
                 log.error("Kafka receive exception: " + e);
             }
         }
+        log.info("Exit join task main loop.");
     }
 }
