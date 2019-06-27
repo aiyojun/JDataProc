@@ -2,6 +2,7 @@ package com.jpro;
 
 import lombok.extern.log4j.Log4j2;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Properties;
@@ -39,5 +40,19 @@ class JComToo {
             log.error("No such key [ kafka.ip ] in properties, exiting.");
             System.exit(-1);
         }
+    }
+
+    static List<String> parseArrayString(String orig) {
+        List<String> _r = new ArrayList<>();
+        // ["Stanford CNC10"]
+        StringBuilder ts = new StringBuilder();
+//        if (orig[0]) {
+//            return null;
+//        }
+//        for () {
+//
+//        }
+
+        return _r;
     }
 }
