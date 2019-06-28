@@ -26,6 +26,17 @@ public class EsProxy implements DataAbstractProxy {
     private String uniqueKey;
 
     /**
+     * post-fix of _id
+     */
+    private int IDMode = 1;
+
+    private String secondField;
+
+    private int tailBegin = 0;
+
+    private int tailSize = 0;
+
+    /**
      * maintain a buffer
      */
     private Queue<String> buffer;
@@ -117,14 +128,20 @@ public class EsProxy implements DataAbstractProxy {
             String _id = null;
             for (String record: buffer) {
                 // parse json string
-                String body;
                 try {
                     ObjectMapper mapper = new ObjectMapper();
                     JsonNode root = mapper.readTree(record);
                     if (!root.has(uniqueKey)) {
                         throw new RuntimeException("No such unique field in data [ " + record + " ]");
                     }
-                    _id = root.path(uniqueKey).toString();
+                    if (IDMode == 2) {
+                        if (!root.has(secondField)) {
+                            throw new RuntimeException("No such second field in data [ " + record + " ]");
+                        }
+                        _id = root.path(uniqueKey).toString() + root.path(secondField).toString().substring(tailBegin, tailSize);
+                    } else {
+                        _id = root.path(uniqueKey).toString();
+                    }
                 } catch (Exception e) {
                     log.error("Parse json data failed: " + e);
                     continue;
@@ -160,6 +177,18 @@ public class EsProxy implements DataAbstractProxy {
         type = props.getProperty("store.es.type");
         monitorTaskInterval = new Integer(props.getProperty("store.es.bulk.interval"));
         uniqueKey = props.getProperty("join.field");
+        secondField = props.getProperty("join.field2");
+        String post = props.getProperty("join.id.postfix.of.field2");
+        IDMode = new Integer(props.getProperty("join.id.mode"));
+        if (IDMode == 2) {
+            if (!post.contains(":")) {
+                log.warn("Invalid property [ join.id.postfix.of.field2 ] = [ " + post + " ], correct format: begin_position:string_size");
+            } else {
+                String[] list = post.split(":");
+                tailBegin = new Integer(list[0]);
+                tailSize  = new Integer(list[1]);
+            }
+        }
 
         // initialization
         RequestConfig requestConfig = RequestConfig.custom().setConnectionRequestTimeout(20).setConnectTimeout(20).setSocketTimeout(20).build();
