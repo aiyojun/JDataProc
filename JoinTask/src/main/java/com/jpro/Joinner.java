@@ -46,6 +46,19 @@ class Joinner {
      */
     private RestHighLevelClient storeClient;
 
+    private String uniqueKey;
+
+    /**
+     * post-fix of _id
+     */
+    private int IDMode = 1;
+
+    private String secondField;
+
+    private int tailBegin = 0;
+
+    private int tailSize = 0;
+
     private void init() {
         /// kafka connections
         Properties props = new Properties();
@@ -57,6 +70,21 @@ class Joinner {
 
         streamMain0Consumer = new KafkaConsumer<>(props);
         streamMain0Consumer.subscribe(Collections.singleton(context.getProperty("stream.main0.kafka.topic")));
+
+        // important fields
+        uniqueKey = props.getProperty("join.field");
+        IDMode = new Integer(props.getProperty("stream.line1.mode"));
+        secondField = props.getProperty("stream.line1.second.field");
+        String post = props.getProperty("stream.line1.postfix.of.second.field ");
+        if (IDMode == 2) {
+            if (!post.contains(":")) {
+                log.warn("Invalid property [ join.id.postfix.of.field2 ] = [ " + post + " ], correct format: begin_position:string_size");
+            } else {
+                String[] list = post.split(":");
+                tailBegin = new Integer(list[0]);
+                tailSize  = new Integer(list[1]);
+            }
+        }
 
         /// es connections
         streamLine1Client = new RestHighLevelClient(
@@ -166,13 +194,13 @@ class Joinner {
             }
         }
         line1.forEach((key, value) -> {
-            if (!key.equals(context.getProperty("join.field"))) {
+            if (!key.equals(uniqueKey)) {
                 _r.put(key, value);
             }
         });
         if (line2 != null) {
             line2.forEach((key, value) -> {
-                if (!key.equals(context.getProperty("join.field"))) {
+                if (!key.equals(uniqueKey)) {
                     _r.put(key, value);
                 }
             });
@@ -203,7 +231,9 @@ class Joinner {
     /**
      * obtain corresponding data from es database
      */
+//    private List<Map<String, Object>> getLine1Records(String _id) {
     private Map<String, Object> getLine1Record(String _id) {
+        List<Map<String, Object>> list = new LinkedList<>();
         GetRequest req = new GetRequest(
                 context.getProperty("stream.line1.es.index"), context.getProperty("stream.line1.es.type"), _id);
         try {
@@ -246,7 +276,7 @@ class Joinner {
                     try {
                         var json = parse(record.value());
                         json = doFilter(json);
-                        String _id = json.path(context.getProperty("join.field")).toString();
+                        String _id = json.path(uniqueKey).toString();
                         if (context.getProperty("join.dimensions").equals("2")) {
                             Map<String, Object> line1Record = getLine1Record(_id);
                             Map<String, Object> line2Record = getLine2Record(_id);
@@ -256,12 +286,12 @@ class Joinner {
                             } else {
                                 if (line1Record == null) {
                                     log.warn("Cannot find data which "
-                                            + context.getProperty("join.field") + "=" + _id
+                                            + uniqueKey + "=" + _id
                                             + " from " + context.getProperty("stream.line1.es.index") + "/"
                                             + context.getProperty("stream.line1.es.type"));
                                 } else {
                                     log.warn("Cannot find data which "
-                                            + context.getProperty("join.field") + "=" + _id
+                                            + uniqueKey + "=" + _id
                                             + " from " + context.getProperty("stream.line2.es.index") + "/"
                                             + context.getProperty("stream.line2.es.type"));
                                 }
@@ -274,7 +304,7 @@ class Joinner {
                                 storeJoinedData(_id, result);
                             } else {
                                 log.warn("Cannot find data which "
-                                        + context.getProperty("join.field") + "=" + _id
+                                        + uniqueKey + "=" + _id
                                         + " from " + context.getProperty("stream.line1.es.index") + "/"
                                         + context.getProperty("stream.line1.es.type"));
                                 doExceptionalData(_id, record.value());
