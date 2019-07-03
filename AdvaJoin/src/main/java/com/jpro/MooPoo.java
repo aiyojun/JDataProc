@@ -10,10 +10,6 @@ import java.util.concurrent.ConcurrentLinkedDeque;
 class MooPoo {
     private Queue<MongoClient> clients;
 
-//    int getPooSize() {
-//        return clients.size();
-//    }
-
     MooPoo(String ip, int port, int size) {
         log.info("Create Mongo connection pool, ip - " + ip + "; port - " + port + "; pool size - " + size);
         clients = new ConcurrentLinkedDeque<>();

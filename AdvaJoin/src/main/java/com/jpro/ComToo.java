@@ -3,15 +3,12 @@ package com.jpro;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mongodb.MongoClient;
-import com.mongodb.client.FindIterable;
-import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoCursor;
 import com.mongodb.client.model.UpdateOptions;
 import lombok.extern.log4j.Log4j2;
 import lombok.var;
 import org.bson.Document;
 
-import javax.print.Doc;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -22,6 +19,27 @@ import static com.mongodb.client.model.Filters.eq;
 
 @Log4j2
 public class ComToo {
+    public static List<String> parseArrayString(String orig) {
+        List<String> terms = new ArrayList<>();
+        StringBuilder ss = new StringBuilder();
+        // split
+        boolean openCollect = false;
+        for (int i = 0; i < orig.length(); i++) {
+            if (orig.charAt(i) == '"') {
+                if (openCollect) {
+                    terms.add(ss.toString());
+                    ss.delete(0, ss.length());
+                }
+                openCollect = !openCollect;
+                continue;
+            }
+            if (openCollect) {
+                ss.append(orig.charAt(i));
+            }
+        }
+        return terms;
+    }
+
     public static JsonNode parseJsonString(String json) throws IOException {
         ObjectMapper mapper = new ObjectMapper();
         return mapper.readTree(json);
@@ -53,13 +71,6 @@ public class ComToo {
     /**
      * CURD of database
      */
-    public static Map<String, Object> queryMongo(MongoClient mongoClient, String database, String col, String key, String val) {
-        Map<String, Object> _r = new HashMap<>();
-        FindIterable<Document> findIterable = mongoClient.getDatabase(database).getCollection(col).find(eq(key, val));
-        findIterable.iterator().next().forEach(_r::put);
-        return _r;
-    }
-
     public static void updateMongo(MongoClient mongoClient, String database, String col, String key, String val, Document doc) {
         mongoClient.getDatabase(database).getCollection(col).findOneAndUpdate(eq(key, val), new Document("$set", doc));
     }

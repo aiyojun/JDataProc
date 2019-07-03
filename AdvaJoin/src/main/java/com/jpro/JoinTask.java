@@ -19,9 +19,11 @@ class JoinTask {
 
     private StoreAcces storeAcces;
 
-    JoinTask(Properties props, StoreAcces store) {
+    JoinTask(Properties props, StoreAcces store, Map<String, String> alias, Map<String, String> owner) {
         gProps = props;
         storeAcces = store;
+        stationsAliasMapping = alias;
+        stationsOwnerMapping = owner;
     }
 
     private boolean running;
@@ -31,6 +33,9 @@ class JoinTask {
     }
 
     private KafkaConsumer<String, String> consumer;
+
+    private Map<String, String> stationsAliasMapping;
+    private Map<String, String> stationsOwnerMapping;
 
     private void init() {
         Properties props = new Properties();
@@ -48,13 +53,13 @@ class JoinTask {
         running = true;
         while (running) {
             try {
-                ConsumerRecords<String, String> records = consumer.poll(Duration.ofMillis(Long.parseLong(gProps.getProperty("kafka.timeout"))));
+                ConsumerRecords<String, String> records = consumer.poll(
+                        Duration.ofMillis(Long.parseLong(gProps.getProperty("kafka.timeout"))));
                 if (records.count() == 0) continue;
                 log.info("Process data batch: " + records.count());
                 for (ConsumerRecord<String, String> record : records) {
                     StringBuilder _id = new StringBuilder();
                     // AIM Data
-//                    log.info("-------------- 1 --------------");
                     JsonNode AIM_J;
                     try {
                         AIM_J = parseAIMData(record.value());
@@ -62,39 +67,31 @@ class JoinTask {
                         log.error(e);
                         continue;
                     }
-                    _id.append(AIM_J.path("SERIAL_NUMBER").textValue());
+                    _id.append(AIM_J.path(gProps.getProperty("unique.key")).textValue());
                     String sn = _id.toString();
 
                     boolean isCNCBranch = true;
-                    switch (AIM_J.path("STATION").textValue()) {
-                        case "5G magnet loading force":
-                            _id.append("_ST1");
-                            break;
-                        case "station2":
-                            _id.append("_ST2");
-                            break;
-                        case "station10":
-                            _id.append("_ST10");
-                            isCNCBranch = false;
-                            break;
-                        default:
-                            log.error("No such AIM station " + AIM_J.path("STATION").textValue());
-                            processExceptionData(AIM_J);
-                            continue;
+                    String stationType = AIM_J.path(gProps.getProperty("station.field")).textValue();
+                    if (!stationsAliasMapping.containsKey(stationType)) {
+                        log.error("No such AIM station " + AIM_J.path(gProps.getProperty("station.field")).textValue());
+                        processExceptionData(AIM_J);
+                        continue;
                     }
+                    if (stationsOwnerMapping.get(stationType).toUpperCase().equals("SPM")) {
+                        isCNCBranch = false;
+                    }
+                    _id.append("_").append(stationsAliasMapping.get(stationType));
 
                     // CNC / SPM Data
                     Document CNC_OR_SPM_D;
                     if (isCNCBranch) {
-//                    log.info("-------------- 2 a --------------");
+                        log.info("Join [ AIM ] ++++ [ CNC ]");
                         CNC_OR_SPM_D = queryCNCData(sn);
                     } else {
-//                    log.info("-------------- 2 b --------------");
+                        log.info("Join [ AIM ] ++++ [ SPM ]");
                         CNC_OR_SPM_D = querySPMData(sn);
                     }
-//                    CNC_OR_SPM_D.forEach((k, v) -> {
-//                        System.out.println("key: " + k + "\t\tvalue: " + v.toString());
-//                    });
+
                     //  SN Data
                     Document SNN_D = querySNData(sn);
 
@@ -109,17 +106,12 @@ class JoinTask {
                     }
                     CNC_OR_SPM_D.forEach(ALL_D::append);
                     SNN_D.forEach((k, v) -> {
-                        if (!k.equals("SERIAL_NUMBER")) {
+                        if (!k.equals(gProps.getProperty("unique.key"))) {
                             ALL_D.append(k, v);
                         }
                     });
-//                    log.info("-------------- 3 --------------");
                     // TODO: storage
-//                    ALL_D.forEach((k, v) -> {
-//                        System.out.println("key : " + k + "\t val : " + v.toString() + "\t val type: " + v.getClass().getName());
-//                    });
                     store("_id", _id.toString(), ALL_D);
-//                    log.info("-------------- 4 --------------");
                 }
             } catch (Exception e) {
                 log.error("Kafka receive exception: " + e);
@@ -131,7 +123,6 @@ class JoinTask {
     private void store(String key, String val, Document row) {
         MooPoo mooPoo = storeAcces.getAIM_MOO();
         MongoClient mongoClient = mooPoo.getMongoClient();
-//        ComToo.insert(mongoClient, gProps.getProperty("mongo.aim.database"), gProps.getProperty("mongo.aim.collection"), row);
         ComToo.upsertMongo(mongoClient, gProps.getProperty("mongo.aim.database"), gProps.getProperty("mongo.aim.collection"), key, val, row);
         mooPoo.returnMongoClient(mongoClient);
     }
@@ -202,7 +193,7 @@ class JoinTask {
             processExceptionData(json);
             throw new RuntimeException("Parse json error, AIM data [ " + json + " ]");
         }
-        if (!_r.has("SERIAL_NUMBER") || !_r.has("STATION")) {
+        if (!_r.has(gProps.getProperty("unique.key")) || !_r.has(gProps.getProperty("station.field"))) {
             processExceptionData(_r);
             throw new RuntimeException("Invalid AIM data [ " + json + " ]");
         }

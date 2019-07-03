@@ -18,9 +18,14 @@ class SubsTask {
 
     private StoreAcces storeAcces;
 
-    SubsTask(Properties props, StoreAcces store) {
+    private Map<String, String> stationsAliasMapping;
+    private Map<String, String> stationsOwnerMapping;
+
+    SubsTask(Properties props, StoreAcces store, Map<String, String> alias, Map<String, String> owner) {
         gProps = props;
         storeAcces = store;
+        stationsAliasMapping = alias;
+        stationsOwnerMapping = owner;
     }
 
     private boolean running;
@@ -50,24 +55,28 @@ class SubsTask {
         running = true;
         while (running) {
             try {
-                ConsumerRecords<String, String> records = consumer.poll(Duration.ofMillis(Long.parseLong(gProps.getProperty("kafka.timeout"))));
+                ConsumerRecords<String, String> records = consumer.poll(
+                        Duration.ofMillis(Long.parseLong(gProps.getProperty("kafka.timeout"))));
                 if (records.count() == 0) continue;
-                log.info("Process data batch: " + records.count());
+                log.info("Batch: " + records.count());
                 for (ConsumerRecord<String, String> record : records) {
                     MongoClient mongoClient = storeAcces.getAIM_MOO().getMongoClient();
                     try {
                         Map<String, Object> fromKafka = ComToo.parseJson(record.value());
                         Document doc = new Document();
                         fromKafka.forEach(doc::append);
-                        ComToo.updateMongo(mongoClient, gProps.getProperty("mongo.aim.database"), gProps.getProperty("mongo.aim.collection"), "_id", record.key() + "_ST1", doc);
-                        ComToo.updateMongo(mongoClient, gProps.getProperty("mongo.aim.database"), gProps.getProperty("mongo.aim.collection"), "_id", record.key() + "_ST2", doc);
+                        stationsAliasMapping.forEach((ky, val) -> {
+                            ComToo.updateMongo(mongoClient, gProps.getProperty("mongo.aim.database"),
+                                    gProps.getProperty("mongo.aim.collection"),
+                                    "_id", record.key() + "_" + val, doc);
+                        });
                     } catch (Exception e) {
                         log.error(e);
                     }
                     storeAcces.getAIM_MOO().returnMongoClient(mongoClient);
                 }
             } catch (Exception e) {
-                log.error("Kafka receive exception: " + e);
+                log.error("--- Process subscribed data occur exception - " + e);
             }
         }
         log.info("Exiting Subscribe Task Main Loop.");
