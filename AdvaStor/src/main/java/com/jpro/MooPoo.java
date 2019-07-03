@@ -10,10 +10,6 @@ import java.util.concurrent.ConcurrentLinkedDeque;
 class MooPoo {
     private Queue<MongoClient> clients;
 
-//    int getPooSize() {
-//        return clients.size();
-//    }
-
     MooPoo(String ip, int port, int size) {
         log.info("Create Mongo connection pool, ip - " + ip + "; port - " + port + "; pool size - " + size);
         clients = new ConcurrentLinkedDeque<>();
@@ -25,6 +21,9 @@ class MooPoo {
     }
 
     MongoClient getMongoClient() {
+        if (clients.size() == 0) {
+            log.error("Warning! No mongo client in MooPoo! Please check!");
+        }
         return clients.remove();
     }
 
@@ -32,6 +31,5 @@ class MooPoo {
         if (cli == null)
             throw new RuntimeException("return Mongo Client error - empty object");
         clients.add(cli);
-        cli = null;
     }
 }
