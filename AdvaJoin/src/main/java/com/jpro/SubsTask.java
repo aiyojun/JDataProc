@@ -47,6 +47,7 @@ class SubsTask {
     void start() {
         log.info("SubsTask start");
         init();
+        running = true;
         while (running) {
             try {
                 ConsumerRecords<String, String> records = consumer.poll(Duration.ofMillis(Long.parseLong(gProps.getProperty("kafka.timeout"))));
@@ -58,8 +59,8 @@ class SubsTask {
                         Map<String, Object> fromKafka = ComToo.parseJson(record.value());
                         Document doc = new Document();
                         fromKafka.forEach(doc::append);
-                        ComToo.updateMongo(mongoClient, gProps.getProperty("mongo.aim.database"),
-                                gProps.getProperty("mongo.aim.collection"), "_id", record.key(), doc);
+                        ComToo.updateMongo(mongoClient, gProps.getProperty("mongo.aim.database"), gProps.getProperty("mongo.aim.collection"), "_id", record.key() + "_ST1", doc);
+                        ComToo.updateMongo(mongoClient, gProps.getProperty("mongo.aim.database"), gProps.getProperty("mongo.aim.collection"), "_id", record.key() + "_ST2", doc);
                     } catch (Exception e) {
                         log.error(e);
                     }
@@ -69,5 +70,6 @@ class SubsTask {
                 log.error("Kafka receive exception: " + e);
             }
         }
+        log.info("Exiting Subscribe Task Main Loop.");
     }
 }

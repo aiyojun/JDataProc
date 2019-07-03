@@ -162,14 +162,18 @@ public class SpecStor {
                     StringBuilder _id = new StringBuilder();
                     _id.append(root.path(props.getProperty("unique.key")).textValue());
                     MongoClient mongoClient = AimMoo.getMongoClient();
-                    boolean hasKey = ComToo.askMongoHasKey(mongoClient, props.getProperty("mongo.aim.database"), props.getProperty("mongo.aim.collection"), "_id", _id.toString());
+                    boolean hasKey = ComToo.askMongoHasKey(mongoClient, props.getProperty("mongo.aim.database"),
+                            props.getProperty("mongo.aim.collection"), "_id", _id.toString() + "_*");
                     AimMoo.returnMongoClient(mongoClient);
                     if (hasKey) { // update AIM data
+                        log.info("Find old record in AIM table, now update!");
                         try {
                             publishUpdateData(_id.toString(), reshapeCNCData(root));
                         } catch (JsonProcessingException e) {
                             log.error(e);
                         }
+                    } else {
+                        log.info("No old record in AIM table");
                     }
 
                     // insert / update
@@ -181,6 +185,10 @@ public class SpecStor {
                         _id.append("_CNC9");
                     } else if (root.path(props.getProperty("cnc.distinct.key")).textValue().contains("CNC10")) {
                         _id.append("_CNC10");
+                    } else {
+                        log.error("Invalid CNC data, cannot find specify CNC number in "
+                                + props.getProperty("cnc.distinct.key") + " [ " + record.value() + " ]");
+                        continue;
                     }
                     Document row = new Document();
                     for (var iter = root.fields(); iter.hasNext();) {
@@ -202,6 +210,7 @@ public class SpecStor {
                 log.error("Kafka receive exception: " + e);
             }
         }
+        log.info("Exiting Main Loop");
     }
 
     private String reshapeCNCData(JsonNode root) throws JsonProcessingException {
@@ -228,6 +237,7 @@ public class SpecStor {
     }
 
     private void publishUpdateData(String _id, String json) {
+        log.info("Publish key [ " + _id + " ], value [ " + json + " ].");
         producer.send(new ProducerRecord<>(props.getProperty("publish.data.kafka.topic"), _id, json));
     }
 

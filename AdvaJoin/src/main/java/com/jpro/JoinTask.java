@@ -45,6 +45,7 @@ class JoinTask {
     void start() {
         log.info("JoinTask start");
         init();
+        running = true;
         while (running) {
             try {
                 ConsumerRecords<String, String> records = consumer.poll(Duration.ofMillis(Long.parseLong(gProps.getProperty("kafka.timeout"))));
@@ -53,6 +54,7 @@ class JoinTask {
                 for (ConsumerRecord<String, String> record : records) {
                     StringBuilder _id = new StringBuilder();
                     // AIM Data
+//                    log.info("-------------- 1 --------------");
                     JsonNode AIM_J;
                     try {
                         AIM_J = parseAIMData(record.value());
@@ -61,10 +63,11 @@ class JoinTask {
                         continue;
                     }
                     _id.append(AIM_J.path("SERIAL_NUMBER").textValue());
+                    String sn = _id.toString();
 
                     boolean isCNCBranch = true;
                     switch (AIM_J.path("STATION").textValue()) {
-                        case "station1":
+                        case "5G magnet loading force":
                             _id.append("_ST1");
                             break;
                         case "station2":
@@ -83,15 +86,19 @@ class JoinTask {
                     // CNC / SPM Data
                     Document CNC_OR_SPM_D;
                     if (isCNCBranch) {
-                        CNC_OR_SPM_D = queryCNCData(_id.toString());
+//                    log.info("-------------- 2 a --------------");
+                        CNC_OR_SPM_D = queryCNCData(sn);
                     } else {
-                        CNC_OR_SPM_D = querySPMData(_id.toString());
+//                    log.info("-------------- 2 b --------------");
+                        CNC_OR_SPM_D = querySPMData(sn);
                     }
-
+//                    CNC_OR_SPM_D.forEach((k, v) -> {
+//                        System.out.println("key: " + k + "\t\tvalue: " + v.toString());
+//                    });
                     //  SN Data
-                    Document SNN_D = querySNData(_id.toString());
+                    Document SNN_D = querySNData(sn);
 
-                    Document ALL_D = new Document("_id", _id);
+                    Document ALL_D = new Document("_id", _id.toString());
                     for (var iter = AIM_J.fields(); iter.hasNext();) {
                         var ele = iter.next();
                         if (ele.getValue().isTextual()) {
@@ -106,20 +113,26 @@ class JoinTask {
                             ALL_D.append(k, v);
                         }
                     });
-
+//                    log.info("-------------- 3 --------------");
                     // TODO: storage
-                    store(ALL_D);
+//                    ALL_D.forEach((k, v) -> {
+//                        System.out.println("key : " + k + "\t val : " + v.toString() + "\t val type: " + v.getClass().getName());
+//                    });
+                    store("_id", _id.toString(), ALL_D);
+//                    log.info("-------------- 4 --------------");
                 }
             } catch (Exception e) {
                 log.error("Kafka receive exception: " + e);
             }
         }
+        log.info("Exiting Join Task Main Loop.");
     }
 
-    private void store(Document row) {
+    private void store(String key, String val, Document row) {
         MooPoo mooPoo = storeAcces.getAIM_MOO();
         MongoClient mongoClient = mooPoo.getMongoClient();
-        ComToo.insert(mongoClient, gProps.getProperty("mongo.aim.database"), gProps.getProperty("mongo.aim.collection"), row);
+//        ComToo.insert(mongoClient, gProps.getProperty("mongo.aim.database"), gProps.getProperty("mongo.aim.collection"), row);
+        ComToo.upsertMongo(mongoClient, gProps.getProperty("mongo.aim.database"), gProps.getProperty("mongo.aim.collection"), key, val, row);
         mooPoo.returnMongoClient(mongoClient);
     }
 
@@ -146,6 +159,7 @@ class JoinTask {
         MongoClient mongoClient = mooPoo.getMongoClient();
         List<Document> li = new ArrayList<>();
         Document res = new Document();
+        log.info("sn number: " + uniKeyVal);
         Document res1 = ComToo.findOneMongo(mongoClient, gProps.getProperty("mongo.cnc.database"), gProps.getProperty("mongo.cnc.collection"), "_id", uniKeyVal + "_CNC7");
         Document res2 = ComToo.findOneMongo(mongoClient, gProps.getProperty("mongo.cnc.database"), gProps.getProperty("mongo.cnc.collection"), "_id", uniKeyVal + "_CNC8");
         Document res3 = ComToo.findOneMongo(mongoClient, gProps.getProperty("mongo.cnc.database"), gProps.getProperty("mongo.cnc.collection"), "_id", uniKeyVal + "_CNC9");
@@ -175,6 +189,7 @@ class JoinTask {
                 res.append("CNC10_MC", doc.getString("MACHINE_NAME"));
             }
         });
+
         if (li.size() == 0) return new Document();
         return res;
     }

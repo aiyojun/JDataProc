@@ -7,11 +7,11 @@ import org.bson.Document;
 
 import java.io.IOException;
 
-import static com.mongodb.client.model.Filters.eq;
+import static com.mongodb.client.model.Filters.*;
 
 public class ComToo {
     public static boolean askMongoHasKey(MongoClient mongoClient, String database, String coll, String key, String id) {
-        return mongoClient.getDatabase(database).getCollection(coll).find(eq(key, id)).iterator().hasNext();
+        return mongoClient.getDatabase(database).getCollection(coll).find(regex(key, id)).iterator().hasNext();
     }
 
     public static JsonNode parseJsonString(String json) throws IOException {

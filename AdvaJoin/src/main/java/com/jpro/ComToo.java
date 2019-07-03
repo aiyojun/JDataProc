@@ -6,6 +6,7 @@ import com.mongodb.MongoClient;
 import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoCursor;
+import com.mongodb.client.model.UpdateOptions;
 import lombok.extern.log4j.Log4j2;
 import lombok.var;
 import org.bson.Document;
@@ -61,6 +62,10 @@ public class ComToo {
 
     public static void updateMongo(MongoClient mongoClient, String database, String col, String key, String val, Document doc) {
         mongoClient.getDatabase(database).getCollection(col).findOneAndUpdate(eq(key, val), new Document("$set", doc));
+    }
+
+    public static void upsertMongo(MongoClient mongoClient, String database, String col, String key, String val, Document doc) {
+        mongoClient.getDatabase(database).getCollection(col).replaceOne(eq(key, val), doc, new UpdateOptions().upsert(true));
     }
 
     public static Document findOneMongo(MongoClient mongoClient, String database, String col, String key, String val) {
