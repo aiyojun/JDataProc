@@ -27,14 +27,14 @@ class SubsTask {
 
     private KafkaConsumer<String, String> consumer;
 
-    void init() {
+    private void init() {
         Properties props = new Properties();
-        props.setProperty("bootstrap.servers", gProps.getProperty("join.kafka.ip") + ":" + gProps.getProperty("join.kafka.port"));
-        props.setProperty("group.id", gProps.getProperty("join.group.id"));
+        props.setProperty("bootstrap.servers", gProps.getProperty("kafka.update.ip") + ":" + gProps.getProperty("kafka.update.port"));
+        props.setProperty("group.id", gProps.getProperty("kafka.update.group.id"));
         props.setProperty("key.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");
         props.setProperty("value.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");
         consumer = new KafkaConsumer<>(props);
-        consumer.subscribe(Collections.singleton(gProps.getProperty("join.source.topic")));
+        consumer.subscribe(Collections.singleton(gProps.getProperty("kafka.update.topic")));
     }
 
     void close() {
@@ -49,7 +49,7 @@ class SubsTask {
         init();
         while (running) {
             try {
-                ConsumerRecords<String, String> records = consumer.poll(Duration.ofMillis(Long.parseLong(gProps.getProperty("monitor.kafka.timeout"))));
+                ConsumerRecords<String, String> records = consumer.poll(Duration.ofMillis(Long.parseLong(gProps.getProperty("kafka.timeout"))));
                 if (records.count() == 0) continue;
                 log.info("Process data batch: " + records.count());
                 for (ConsumerRecord<String, String> record : records) {
@@ -58,7 +58,8 @@ class SubsTask {
                         Map<String, Object> fromKafka = ComToo.parseJson(record.value());
                         Document doc = new Document();
                         fromKafka.forEach(doc::append);
-                        ComToo.updateMongo(mongoClient, "mydb", "aim_data", "_id", record.key(), doc);
+                        ComToo.updateMongo(mongoClient, gProps.getProperty("mongo.aim.database"),
+                                gProps.getProperty("mongo.aim.collection"), "_id", record.key(), doc);
                     } catch (Exception e) {
                         log.error(e);
                     }
