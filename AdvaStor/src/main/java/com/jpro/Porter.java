@@ -44,9 +44,7 @@ public class Porter {
 
     private boolean needNotify = true;
 
-    private boolean needReshape = false;
-
-    private Filter selfFilter;
+    private AbstDataProc dataProc;
 
     Porter(Properties pro) {
         context = pro;
@@ -55,10 +53,10 @@ public class Porter {
     private void prepare() {
         if (context.getProperty("filter.switch").toLowerCase().equals( "true")) {
             needFilter = true;
-            selfFilter = new CNCDataFilter();
+            dataProc = new CNCDataProc(context);
         }
+        needNotify = context.getProperty("notify.switch").toLowerCase().equals("true");
         if (context.getProperty("notify.switch").toLowerCase().equals("false")) needNotify = false;
-        if (context.getProperty("reshape.switch").toLowerCase().equals("true")) needReshape = true;
         /// Database storage settings
         mongo = new MongoClient(context.getProperty("storage.mongo.ip"),
                 Integer.parseInt(context.getProperty("storage.mongo.port")));
@@ -89,19 +87,50 @@ public class Porter {
         while (isWorking) {
             try {
                 ConsumerRecords<String, String> records = consumer.poll(Duration.ofMillis(Long.parseLong(context.getProperty("kafka.timeout"))));
+                if (records.count() == 0) continue;
                 for (ConsumerRecord<String, String> record : records) {
                     try {
-                        Document row = Document.parse(record.value());
-                        if (needFilter) {
-                            row = selfFilter.doFilter(row);
+                        Document row;
+                        try {
+                            row = Document.parse(record.value());
+                        } catch (Exception e) {
+                            doStoreExceptionData(new Document("raw", record.value()));
+                            log.error("Parse data failed - " + e);
+                            continue;
                         }
-
-                        if (needReshape) {
-
+                        if (needFilter) {
+                            try {
+                                row = dataProc.doFilter(row);
+                            } catch (Exception e) {
+                                doStoreExceptionData(Document.parse(record.value()));
+                                log.error("Do filter error - " + e);
+                                continue;
+                            }
+                            if (row.isEmpty()) continue;
                         }
 
                         if (row != null && !row.isEmpty()) {
-                            doStore(row);
+                            Document storageData;
+                            try {
+                                storageData = dataProc.generateStorageData(row);
+                            } catch (Exception e) {
+                                doStoreExceptionData(Document.parse(record.value()));
+                                log.error("Do generate storage data error - " + e);
+                                continue;
+                            }
+                            doStore(storageData);
+
+                            if (needNotify) {
+                                Document notifyData;
+                                try {
+                                    notifyData = dataProc.generateNotifyData(row);
+                                } catch (Exception e) {
+                                    doStoreExceptionData(Document.parse(record.value()));
+                                    log.error("Do reshape error - " + e);
+                                    continue;
+                                }
+                                doNotify(notifyData);
+                            }
                         }
                     } catch (Exception e) {
                         log.error("----> " + e);
@@ -113,20 +142,26 @@ public class Porter {
         }
     }
 
-    public void doStore(Document row) {
+    private void doStore(Document row) {
         mongo.getDatabase(context.getProperty("storage.mongo.database"))
                 .getCollection(context.getProperty("storage.mongo.collection"))
                 .replaceOne(eq("_id", row.getString("_id")), row, new UpdateOptions().upsert(true));
     }
 
-    public void doNotify(Document row) {
+    private void doStoreExceptionData(Document row) {
+        mongo.getDatabase(context.getProperty("storage.mongo.database"))
+                .getCollection(context.getProperty("storage.exception.collection"))
+                .insertOne(row);
+    }
+
+    private void doNotify(Document row) {
         String sn = row.getString(context.getProperty("unique.field"));
         boolean needUpdate = mongo.getDatabase(context.getProperty("storage.mongo.database"))
                 .getCollection(context.getProperty("storage.mongo.collection"))
                 .find(regex("_id", sn + "_*")).iterator().hasNext();
         if (needUpdate) {
             log.info("Find old record in AIM, Do notify.");
-            producer.send(new ProducerRecord<>(context.getProperty("publish.data.kafka.topic"), sn, row.toJson()));
+            producer.send(new ProducerRecord<>(context.getProperty("notify.kafka.topic"), sn, row.toJson()));
         } else {
             log.info("No old record in AIM, Don't need notify.");
         }

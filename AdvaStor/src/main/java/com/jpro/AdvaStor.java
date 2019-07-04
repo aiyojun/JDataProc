@@ -28,24 +28,31 @@ public class AdvaStor {
 		}
 		log.info("program AdvaStor start ...");
 
-		MooPoo AimMoo = new MooPoo(props.getProperty("mongo.aim.ip"), Integer.parseInt(props.getProperty("mongo.aim.port")), Integer.parseInt(props.getProperty("mongo.aim.pool.size")));
-		MooPoo CncMoo;
-		if (props.getProperty("stream.type").equals("sn")) {
-			CncMoo = new MooPoo(props.getProperty("mongo.sn.ip"), Integer.parseInt(props.getProperty("mongo.sn.port")), Integer.parseInt(props.getProperty("mongo.sn.pool.size")));
-		} else {
-			CncMoo = new MooPoo(props.getProperty("mongo.cnc.ip"), Integer.parseInt(props.getProperty("mongo.cnc.port")), Integer.parseInt(props.getProperty("mongo.cnc.pool.size")));
-		}
-		MooPoo ExcMoo = new MooPoo(props.getProperty("mongo.exc.ip"), Integer.parseInt(props.getProperty("mongo.exc.port")), Integer.parseInt(props.getProperty("mongo.exc.pool.size")));
-
-		SpecStor specStor = new SpecStor(props, ExcMoo, AimMoo, CncMoo);
+		Porter porter = new Porter(props);
 		Runtime.getRuntime().addShutdownHook(new Thread(() -> {
-			specStor.close();
+			porter.stop();
 			log.info("Recycle resource.");
 		}));
-		if (props.getProperty("stream.type").equals("sn")) {
-			specStor.startForSN();
-		} else {
-			specStor.start();
-		}
+		porter.work();
+
+//		MooPoo AimMoo = new MooPoo(props.getProperty("mongo.aim.ip"), Integer.parseInt(props.getProperty("mongo.aim.port")), Integer.parseInt(props.getProperty("mongo.aim.pool.size")));
+//		MooPoo CncMoo;
+//		if (props.getProperty("stream.type").equals("sn")) {
+//			CncMoo = new MooPoo(props.getProperty("mongo.sn.ip"), Integer.parseInt(props.getProperty("mongo.sn.port")), Integer.parseInt(props.getProperty("mongo.sn.pool.size")));
+//		} else {
+//			CncMoo = new MooPoo(props.getProperty("mongo.cnc.ip"), Integer.parseInt(props.getProperty("mongo.cnc.port")), Integer.parseInt(props.getProperty("mongo.cnc.pool.size")));
+//		}
+//		MooPoo ExcMoo = new MooPoo(props.getProperty("mongo.exc.ip"), Integer.parseInt(props.getProperty("mongo.exc.port")), Integer.parseInt(props.getProperty("mongo.exc.pool.size")));
+//
+//		SpecStor specStor = new SpecStor(props, ExcMoo, AimMoo, CncMoo);
+//		Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+//			specStor.close();
+//			log.info("Recycle resource.");
+//		}));
+//		if (props.getProperty("stream.type").equals("sn")) {
+//			specStor.startForSN();
+//		} else {
+//			specStor.start();
+//		}
 	}
 }
