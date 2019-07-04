@@ -66,6 +66,7 @@ class SubsTask {
                         Document doc = new Document();
                         fromKafka.forEach(doc::append);
                         stationsAliasMapping.forEach((ky, val) -> {
+                            log.info("Update AIM : " + record.key() + "_" + val);
                             ComToo.updateMongo(mongoClient, gProps.getProperty("mongo.aim.database"),
                                     gProps.getProperty("mongo.aim.collection"),
                                     "_id", record.key() + "_" + val, doc);

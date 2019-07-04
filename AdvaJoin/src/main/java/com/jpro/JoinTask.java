@@ -222,6 +222,7 @@ class JoinTask {
                 row.append(ele.getKey(), ele.getValue());
             }
         }
+        row.remove("_id");
         ComToo.insert(mongoClient, gProps.getProperty("mongo.exc.database"), gProps.getProperty("mongo.exc.collection"), row);
         mooPoo.returnMongoClient(mongoClient);
     }

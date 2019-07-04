@@ -51,9 +51,13 @@ public class Porter {
     }
 
     private void prepare() {
+        if (context.getProperty("mode").toLowerCase().equals("cnc")) {
+            dataProc = new CNCDataProc(context);
+        } else {
+            dataProc = new SimpDataProc();
+        }
         if (context.getProperty("filter.switch").toLowerCase().equals( "true")) {
             needFilter = true;
-            dataProc = new CNCDataProc(context);
         }
         needNotify = context.getProperty("notify.switch").toLowerCase().equals("true");
         if (context.getProperty("notify.switch").toLowerCase().equals("false")) needNotify = false;
@@ -84,6 +88,7 @@ public class Porter {
     public void work() {
         prepare();
         isWorking = true;
+        log.info("Wait Kafka ...");
         while (isWorking) {
             try {
                 ConsumerRecords<String, String> records = consumer.poll(Duration.ofMillis(Long.parseLong(context.getProperty("kafka.timeout"))));
@@ -94,16 +99,16 @@ public class Porter {
                         try {
                             row = Document.parse(record.value());
                         } catch (Exception e) {
-                            doStoreExceptionData(new Document("raw", record.value()));
                             log.error("Parse data failed - " + e);
+                            doStoreExceptionData(new Document("raw", record.value()));
                             continue;
                         }
                         if (needFilter) {
                             try {
                                 row = dataProc.doFilter(row);
                             } catch (Exception e) {
-                                doStoreExceptionData(Document.parse(record.value()));
                                 log.error("Do filter error - " + e);
+                                doStoreExceptionData(Document.parse(record.value()));
                                 continue;
                             }
                             if (row.isEmpty()) continue;
@@ -114,8 +119,8 @@ public class Porter {
                             try {
                                 storageData = dataProc.generateStorageData(row);
                             } catch (Exception e) {
-                                doStoreExceptionData(Document.parse(record.value()));
                                 log.error("Do generate storage data error - " + e);
+                                doStoreExceptionData(Document.parse(record.value()));
                                 continue;
                             }
                             doStore(storageData);
@@ -125,8 +130,8 @@ public class Porter {
                                 try {
                                     notifyData = dataProc.generateNotifyData(row);
                                 } catch (Exception e) {
-                                    doStoreExceptionData(Document.parse(record.value()));
                                     log.error("Do reshape error - " + e);
+                                    doStoreExceptionData(Document.parse(record.value()));
                                     continue;
                                 }
                                 doNotify(notifyData);
@@ -146,22 +151,30 @@ public class Porter {
         mongo.getDatabase(context.getProperty("storage.mongo.database"))
                 .getCollection(context.getProperty("storage.mongo.collection"))
                 .replaceOne(eq("_id", row.getString("_id")), row, new UpdateOptions().upsert(true));
+        log.info("Porter::doStore complete");
     }
 
     private void doStoreExceptionData(Document row) {
+        row.remove("_id");
         mongo.getDatabase(context.getProperty("storage.mongo.database"))
                 .getCollection(context.getProperty("storage.exception.collection"))
                 .insertOne(row);
+        log.info("Porter::doStoreExceptionData complete");
     }
 
     private void doNotify(Document row) {
+        row.forEach((k, v) -> {
+            System.out.println(k + " - " + v);
+        });
         String sn = row.getString(context.getProperty("unique.field"));
+        System.out.println("sn: " + sn);
         boolean needUpdate = mongo.getDatabase(context.getProperty("storage.mongo.database"))
-                .getCollection(context.getProperty("storage.mongo.collection"))
+                .getCollection(context.getProperty("storage.aim.collection"))
                 .find(regex("_id", sn + "_*")).iterator().hasNext();
         if (needUpdate) {
             log.info("Find old record in AIM, Do notify.");
             producer.send(new ProducerRecord<>(context.getProperty("notify.kafka.topic"), sn, row.toJson()));
+            log.info("Published key [ " + sn + " ] ; value [ " + row.toJson() + " ].");
         } else {
             log.info("No old record in AIM, Don't need notify.");
         }
