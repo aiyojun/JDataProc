@@ -58,6 +58,8 @@ class JoinTask {
                 if (records.count() == 0) continue;
                 log.info("Process data batch: " + records.count());
                 for (ConsumerRecord<String, String> record : records) {
+                    Document ddd = Document.parse(record.value());
+                    log.info("--> {}", ddd.toJson());
                     StringBuilder _id = new StringBuilder();
                     // AIM Data
                     JsonNode AIM_J;
@@ -69,19 +71,21 @@ class JoinTask {
                     }
                     _id.append(AIM_J.path(gProps.getProperty("unique.key")).textValue());
                     String sn = _id.toString();
+                    System.out.println("----1");
 
                     boolean isCNCBranch = true;
                     String stationType = AIM_J.path(gProps.getProperty("station.field")).textValue();
                     if (!stationsAliasMapping.containsKey(stationType)) {
-                        log.error("No such AIM station " + AIM_J.path(gProps.getProperty("station.field")).textValue());
-                        processExceptionData(AIM_J);
+                        log.error("No such AIM station " + AIM_J.path(gProps.getProperty("station.field")).textValue() + ddd.toJson());
+//                        processExceptionData(AIM_J);
                         continue;
                     }
+                    System.out.println("----2");
                     if (stationsOwnerMapping.get(stationType).toUpperCase().equals("SPM")) {
                         isCNCBranch = false;
                     }
                     _id.append("_").append(stationsAliasMapping.get(stationType));
-
+                    System.out.println("----3");
                     // CNC / SPM Data
                     Document CNC_OR_SPM_D;
                     if (isCNCBranch) {
@@ -91,10 +95,10 @@ class JoinTask {
                         log.info("Join [ AIM ] ++++ [ SPM ]");
                         CNC_OR_SPM_D = querySPMData(sn);
                     }
-
+                    System.out.println("----4");
                     //  SN Data
                     Document SNN_D = querySNData(sn);
-
+                    System.out.println("----5");
                     Document ALL_D = new Document("_id", _id.toString());
                     for (var iter = AIM_J.fields(); iter.hasNext();) {
                         var ele = iter.next();
@@ -104,12 +108,14 @@ class JoinTask {
                             ALL_D.append(ele.getKey(), ele.getValue().numberValue());
                         }
                     }
+                    System.out.println("----6");
                     CNC_OR_SPM_D.forEach(ALL_D::append);
                     SNN_D.forEach((k, v) -> {
                         if (!k.equals(gProps.getProperty("unique.key"))) {
                             ALL_D.append(k, v);
                         }
                     });
+                    System.out.println("----7");
                     // TODO: storage
                     store("_id", _id.toString(), ALL_D);
                 }
@@ -121,6 +127,7 @@ class JoinTask {
     }
 
     private void store(String key, String val, Document row) {
+        log.info("store _id - {}", row.getString("_id"));
         MooPoo mooPoo = storeAcces.getAIM_MOO();
         MongoClient mongoClient = mooPoo.getMongoClient();
         ComToo.upsertMongo(mongoClient, gProps.getProperty("mongo.aim.database"), gProps.getProperty("mongo.aim.collection"), key, val, row);
