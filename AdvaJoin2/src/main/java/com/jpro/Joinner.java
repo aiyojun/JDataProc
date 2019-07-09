@@ -1,14 +1,18 @@
 package com.jpro;
 
 import com.mongodb.MongoClient;
+import com.mongodb.client.MongoCursor;
 import lombok.extern.log4j.Log4j2;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.bson.Document;
 
+import java.text.ParseException;
 import java.time.Duration;
 import java.util.*;
+
+import static com.mongodb.client.model.Filters.*;
 
 @Log4j2
 public class Joinner {
@@ -24,18 +28,16 @@ public class Joinner {
      */
     private MongoClient mongoOfSN;
     private MongoClient mongoOfCNC;
+    private MongoClient mongoOfSPM;
     private MooPoo mongosOfAIM;
 
     private KafkaConsumer<String, String> consumerOfAIM;
 
-    private Map<String, String> stationsAliasMapping;
-    private Map<String, String> stationsOwnerMapping;
+    private Map<String, SpcCon> spcConfigTable;
 
-    Joinner(Properties pro, MooPoo poo, Map<String, String> alias, Map<String, String> owner) {
+    Joinner(Properties pro, MooPoo poo) {
         context = pro;
         mongosOfAIM = poo;
-        stationsAliasMapping = alias;
-        stationsOwnerMapping = owner;
     }
 
     public void stop() {
@@ -43,8 +45,13 @@ public class Joinner {
     }
 
     private void prepare() {
+        spcConfigTable = ComToo.generateSpcConfig(context.getProperty("spc.config"));
         /// Database storage settings
         mongoOfSN = new MongoClient(context.getProperty("storage.mongo.ip"),
+                Integer.parseInt(context.getProperty("storage.mongo.port")));
+        mongoOfCNC = new MongoClient(context.getProperty("storage.mongo.ip"),
+                Integer.parseInt(context.getProperty("storage.mongo.port")));
+        mongoOfSPM = new MongoClient(context.getProperty("storage.mongo.ip"),
                 Integer.parseInt(context.getProperty("storage.mongo.port")));
         /// Data source
         Properties conProps = new Properties();
@@ -89,26 +96,25 @@ public class Joinner {
                         }
                         log.info("Check AIM data");
 
-                        // TODO: step 3 increase station
-                        String stationType = row.getString(context.getProperty("station.key"));
-                        if (!stationsAliasMapping.containsKey(stationType)) {
-                            StringBuilder postfix = new StringBuilder();
-                            postfix.append(context.getProperty("station.postfix"));
-                            postfix.append(stationsAliasMapping.size());
-                            stationsAliasMapping.put(stationType, postfix.toString());
-                            stationsOwnerMapping.put(stationType, "-");
-                        }
+                        // TODO: step generate TIME_2 TIME_3 fields
+                        generateTimeFieldsForWangDong(row);
 
-                        // TODO: step 4 query SN & CNC
+                        // TODO: step 3 append parse spc data
+                        shapeSPC(row);
+
+                        // TODO: step 4 query SN & CNC / SPM
                         Document inc1 = queryFromSN(row.getString(context.getProperty("unique.key")));
 
                         Document inc2;
-                        if (stationsOwnerMapping.get(stationType).toUpperCase().equals("CNC")) {
-                            log.info("==> AIM ++ CNC");
-                            inc2 = queryFromCNC(row.getString(context.getProperty("unique.key")));
-                        } else if (stationsOwnerMapping.get(stationType).toUpperCase().equals("SPM")) {
+                        if (row.getString(context.getProperty("process.key")).toLowerCase().equals("fqc")) {
                             log.info("==> AIM ++ SPM");
-                            inc2 = new Document();
+                            inc2 = queryFromSPM(row.getString(context.getProperty("unique.key")));
+                        } else if (row.getString(context.getProperty("process.key")).toLowerCase().equals("laser_qc")) {
+                            log.info("==> AIM ++ CNC");
+                            inc2 = queryFromCNC_v2(row.getString(context.getProperty("unique.key")));
+                        } else if (row.getString(context.getProperty("process.key")).toLowerCase().contains("laser_qc")) {
+                            log.info("==> AIM ++ CNC (Contains Version)");
+                            inc2 = queryFromCNC_v2(row.getString(context.getProperty("unique.key")));
                         } else {
                             log.info("==> AIM ++ -");
                             inc2 = new Document();
@@ -125,11 +131,14 @@ public class Joinner {
                                 row.put(k, v);
                             }
                         });
+                        if (!inc1.isEmpty()) {
+                            generateMappingIDForWangDong(row);
+                        }
                         log.info("Merge");
 
                         // TODO: final store
                         finalStore("_id", row.getString(context.getProperty("unique.key"))
-                                + "_" + stationsAliasMapping.get(stationType), row);
+                                + "_" + row.getString(context.getProperty("station.key")), row);
                         log.info("Store");
                     } catch (Exception e) {
                         log.error("----> " + e + " -> " + record.value());
@@ -140,6 +149,99 @@ public class Joinner {
             }
         }
         log.info("Exiting Joinner work.");
+    }
+
+    private Document generateTimeFieldsForWangDong(Document orig) {
+        if (!orig.containsKey(context.getProperty("aim.time1.key"))) {
+            return orig;
+        }
+        if (orig.get(context.getProperty("aim.time1.key")) instanceof String) {
+            String timeValue = orig.getString(context.getProperty("aim.time1.key"));
+            try {
+                long timeLong;
+                if (timeValue.charAt(4) == '-' && timeValue.charAt(7) == '-' && timeValue.charAt(10) == ' ') {
+                    timeLong = ComToo.timestampToLong(timeValue, "yyyy-MM-dd HH:mm:ss");
+                } else if (timeValue.charAt(4) == '/' && timeValue.charAt(7) == '/' && timeValue.charAt(10) == ' ') {
+                    timeValue = timeValue.substring(0, 4) + "-" + timeValue.substring(5, 2) + "-" + timeValue.substring(8, 11);
+                    timeLong = ComToo.timestampToLong(timeValue, "yyyy-MM-dd HH:mm:ss");
+                } else {
+                    log.error("unknown time format in AIM data.");
+                    return orig;
+                }
+                orig.put(context.getProperty("aim.time1.key"), timeLong);
+                orig.put(context.getProperty("aim.time2.key"), (int)(timeLong / 1000 / 60 / 60));
+                orig.put(context.getProperty("aim.time3.key"), (int)(timeLong / 1000 / 60 / 60 / 24));
+            } catch (ParseException pe) {
+                log.error("unknown time format in AIM data.");
+                return orig;
+            }
+        } else if (orig.get(context.getProperty("aim.time1.key")) instanceof Long) {
+            long timeLong = orig.getLong(context.getProperty("aim.time1.key"));
+            orig.put(context.getProperty("aim.time1.key"), timeLong);
+            orig.put(context.getProperty("aim.time2.key"), (int)(timeLong / 1000 / 60 / 60));
+            orig.put(context.getProperty("aim.time3.key"), (int)(timeLong / 1000 / 60 / 60 / 24));
+        }
+        return orig;
+    }
+
+    private void generateMappingIDForWangDong(Document orig) {
+        if (!orig.containsKey(context.getProperty("aim.site.key"))
+                || !orig.containsKey(context.getProperty("aim.source.key"))
+                || !orig.containsKey(context.getProperty("sn.color.key"))
+                || !orig.containsKey(context.getProperty("sn.builds.key"))
+                || !orig.containsKey(context.getProperty("sn.special_build.key"))
+                || !orig.containsKey(context.getProperty("sn.wifi_4g.key"))
+        ) {
+            log.warn("lack of necessary field in generating MappingID field!");
+            return;
+        }
+        StringBuilder mappingID = new StringBuilder();
+        mappingID.append(orig.getString(context.getProperty("aim.site.key")))
+                .append(orig.getString(context.getProperty("aim.source.key")))
+                .append(orig.getString(context.getProperty("sn.color.key")))
+                .append(orig.getString(context.getProperty("sn.builds.key")))
+                .append(orig.getString(context.getProperty("sn.special_build.key")))
+                .append(orig.getString(context.getProperty("sn.wifi_4g.key")));
+        orig.put("mapping_id", mappingID.toString());
+    }
+
+    private SpcCon queryFromConfig(String spcName, String staionType) {
+        // TODO: read config file
+        String key = spcName + ":" + staionType;
+        return spcConfigTable.getOrDefault(key, null);
+    }
+
+    private void shapeSPC(Document row) {
+        //Document spc = new Document();
+        List<Document> spcs = new ArrayList<>();
+        row.forEach((key, val) -> {
+            if (key.contains("SPC") && row.get(key) instanceof String) {
+                try {
+                    double spcValue = Double.parseDouble((String) val);
+                    SpcCon spcCon = queryFromConfig(key.substring(4, key.length() - 4), row.getString(context.getProperty("station.key")));
+                    if (spcCon == null) {
+                        log.warn("Cannot find low_limit - norminal - up_limit from config file.");
+                        return;
+                    }
+                    Document oneOfSpc = new Document();
+                    oneOfSpc.put("NAME", key);
+                    oneOfSpc.put("VALUE", spcValue);
+                    if (spcValue >= spcCon.getDownlimit() && spcValue <= spcCon.getUplimit()) {
+                        oneOfSpc.put("GOOD", true);
+                    } else {
+                        oneOfSpc.put("GOOD", false);
+                    }
+                    oneOfSpc.put("up_limit", spcCon.getUplimit());
+                    oneOfSpc.put("low_limit", spcCon.getDownlimit());
+                    oneOfSpc.put("norminal", spcCon.getNormal());
+                    spcs.add(oneOfSpc);
+                    row.remove(key);
+                } catch (Exception e) {
+                    log.error("Joinner::shapeSPC -> " + e);
+                }
+            }
+        });
+        row.put("SPC", spcs);
     }
 
     private void finalStore(String key, String val, Document row) {
@@ -155,6 +257,33 @@ public class Joinner {
         return res;
     }
 
+    private Document queryFromSPM(String unique) {
+        Document res = new Document();
+
+        return res;
+    }
+
+    private Document queryFromCNC_v2(String unique) {
+        List<Document> recordsOfCNC = new ArrayList<>();
+        MongoCursor<Document> mongoCursor = mongoOfCNC.getDatabase(context.getProperty("storage.mongo.database")).getCollection(context.getProperty("storage.cnc.collection"))
+                .find(regex("_id", unique + "_*")).iterator();
+        while (mongoCursor.hasNext()) {
+            Document row = mongoCursor.next();
+            if (!row.containsKey(context.getProperty("cnc.process.field"))
+                    || !row.containsKey(context.getProperty("cnc.cell.field"))
+                    || !row.containsKey(context.getProperty("cnc.machine.field"))) {
+                log.warn("lack necessary field in CNC data, continue join others");
+                continue;
+            }
+            Document prow = new Document();
+            prow.put(context.getProperty("cnc.process.replace"), row.getString(context.getProperty("cnc.process.field")));
+            prow.put(context.getProperty("cnc.cell.replace"), row.getString(context.getProperty("cnc.cell.field")));
+            prow.put(context.getProperty("cnc.machine.field"), row.getString(context.getProperty("cnc.machine.replace")));
+            recordsOfCNC.add(prow);
+        }
+        return new Document("CNC", recordsOfCNC);
+    }
+
     private Document queryFromCNC(String unique) {
         List<Document> li = new ArrayList<>();
         Document res = new Document();
@@ -167,7 +296,12 @@ public class Joinner {
         if (res2 != null) li.add(res2);
         if (res3 != null) li.add(res3);
         if (res4 != null) li.add(res4);
+        if (li.size() == 0) return new Document();
         li.forEach((doc) -> {
+            if (!doc.containsKey("PROCESS_NAME") || !doc.containsKey("CELL") || !doc.containsKey("MACHINE_NAME")) {
+                log.warn("Lack of PROCESS_NAME | CELL | MACHINE_NAME");
+                return;
+            }
             String processName = doc.getString("PROCESS_NAME");
             if (processName.contains("CNC7")) {
                 res.append("CNC7_NAME", processName);
@@ -188,7 +322,6 @@ public class Joinner {
             }
         });
 
-        if (li.size() == 0) return new Document();
         return res;
     }
 
@@ -198,6 +331,9 @@ public class Joinner {
         }
         if (!row.containsKey(context.getProperty("station.key"))) {
             throw new RuntimeException("No " + context.getProperty("station.key" + " in AIM data."));
+        }
+        if (!row.containsKey(context.getProperty("process.key"))) {
+            throw new RuntimeException("No " + context.getProperty("process.key" + " in AIM data."));
         }
     }
 

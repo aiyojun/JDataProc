@@ -1,0 +1,438 @@
+id,line,low_limit,norminal,process,product,site,soucrce,spc,station,up_limit
+1,line_1,10,12,fqc,Stanford,RT,line_1,T1-135,Spline magnet loading force,14
+2,line_1,13,15,fqc,Stanford,RT,line_1,T1-120,Spline magnet loading force,18.5
+3,line_1,10,12,fqc,Stanford,RT,line_1,T2-135,Spline magnet loading force,14
+4,line_1,13,15,fqc,Stanford,RT,line_1,T2-120,Spline magnet loading force,18.5
+5,line_1,6.5,7,fqc,Stanford,RT,line_1,C1,Floor magnet loading force,8.5
+6,line_1,6,7,fqc,Stanford,RT,line_1,C2,Floor magnet loading force,8
+7,line_1,7.75,8.25,fqc,Stanford,RT,line_1,C3,Floor magnet loading force,10.25
+8,line_1,8,9,fqc,Stanford,RT,line_1,C4,Floor magnet loading force,10.75
+9,line_1,2.4,2.8,fqc,Stanford,RT,line_1,HSG Floor,Floor magnet loading force,3
+10,line_1,0.7,0.9,fqc,Stanford,RT,line_1,OR1,Floor magnet loading force,1.2
+11,line_1,0.6,0.8,fqc,Stanford,RT,line_1,OR2,Floor magnet loading force,1
+12,line_1,2,2.5,fqc,Stanford,RT,line_1,B2,5G magnet loading force,2.9
+13,line_1,2,2.5,fqc,Stanford,RT,line_1,B1,5G magnet loading force,2.9
+14,line_1,4,4.8,fqc,Stanford,RT,line_1,B2+B1,5G magnet loading force,5.6
+15,line_1,-0.08,0,fqc,Stanford,RT,line_1,SC_1,Scorpius cover to HSG Gap/offset/waviness,0
+16,line_1,-0.08,0,fqc,Stanford,RT,line_1,SC_2,Scorpius cover to HSG Gap/offset/waviness,0
+17,line_1,-0.08,0,fqc,Stanford,RT,line_1,SC_3,Scorpius cover to HSG Gap/offset/waviness,0
+18,line_1,-0.08,0,fqc,Stanford,RT,line_1,SC_4,Scorpius cover to HSG Gap/offset/waviness,0
+19,line_1,0,0,fqc,Stanford,RT,line_1,Cover,Scorpius cover to HSG Gap/offset/waviness,10
+20,line_1,0,0.03,fqc,Stanford,RT,line_1,G-P OR1,Orion_gap_offset,0.1
+21,line_1,0,0.03,fqc,Stanford,RT,line_1,G-P OR2,Orion_gap_offset,0.1
+22,line_1,0,0.03,fqc,Stanford,RT,line_1,G-P OR3,Orion_gap_offset,0.1
+23,line_1,0,0.03,fqc,Stanford,RT,line_1,G-P OR4,Orion_gap_offset,0.1
+24,line_1,0,0.03,fqc,Stanford,RT,line_1,G-P OR5,Orion_gap_offset,0.1
+25,line_1,0,0.03,fqc,Stanford,RT,line_1,G-P OR6,Orion_gap_offset,0.1
+26,line_1,0,0.03,fqc,Stanford,RT,line_1,G-P OR7,Orion_gap_offset,0.1
+27,line_1,0,0.03,fqc,Stanford,RT,line_1,G-P OR8,Orion_gap_offset,0.1
+28,line_1,0,0.03,fqc,Stanford,RT,line_1,G-P OR9,Orion_gap_offset,0.1
+29,line_1,0,0.03,fqc,Stanford,RT,line_1,G-P OR10,Orion_gap_offset,0.1
+30,line_1,0,0.03,fqc,Stanford,RT,line_1,G-P OR11,Orion_gap_offset,0.1
+31,line_1,0,0.03,fqc,Stanford,RT,line_1,G-P OR12,Orion_gap_offset,0.1
+32,line_1,-0.1,0,fqc,Stanford,RT,line_1,O-P OR1,Orion_gap_offset,0
+33,line_1,-0.1,0,fqc,Stanford,RT,line_1,O-P OR2,Orion_gap_offset,0
+34,line_1,-0.1,0,fqc,Stanford,RT,line_1,O-P OR3,Orion_gap_offset,0
+35,line_1,-0.1,0,fqc,Stanford,RT,line_1,O-P OR4,Orion_gap_offset,0
+36,line_1,-0.1,0,fqc,Stanford,RT,line_1,O-P OR5,Orion_gap_offset,0
+37,line_1,-0.1,0,fqc,Stanford,RT,line_1,O-P OR6,Orion_gap_offset,0
+38,line_1,-0.1,0,fqc,Stanford,RT,line_1,O-P OR7,Orion_gap_offset,0
+39,line_1,-0.1,0,fqc,Stanford,RT,line_1,O-P OR8,Orion_gap_offset,0
+40,line_1,-0.1,0,fqc,Stanford,RT,line_1,O-P OR9,Orion_gap_offset,0
+41,line_1,-0.1,0,fqc,Stanford,RT,line_1,O-P OR10,Orion_gap_offset,0
+42,line_1,-0.1,0,fqc,Stanford,RT,line_1,O-P OR11,Orion_gap_offset,0
+43,line_1,-0.1,0,fqc,Stanford,RT,line_1,O-P OR12,Orion_gap_offset,0
+44,line_1,-0.18,-0.05,fqc,Stanford,RT,line_1,O-M OR1,Orion_gap_offset,-0.02
+45,line_1,-0.18,-0.05,fqc,Stanford,RT,line_1,O-M OR2,Orion_gap_offset,-0.02
+46,line_1,-0.18,-0.05,fqc,Stanford,RT,line_1,O-M OR3,Orion_gap_offset,-0.02
+47,line_1,-0.18,-0.05,fqc,Stanford,RT,line_1,O-M OR4,Orion_gap_offset,-0.02
+48,line_1,-0.18,-0.05,fqc,Stanford,RT,line_1,O-M OR5,Orion_gap_offset,-0.02
+49,line_1,-0.18,-0.05,fqc,Stanford,RT,line_1,O-M OR6,Orion_gap_offset,-0.02
+50,line_1,-0.18,-0.05,fqc,Stanford,RT,line_1,O-M OR7,Orion_gap_offset,-0.02
+51,line_1,-0.18,-0.05,fqc,Stanford,RT,line_1,O-M OR8,Orion_gap_offset,-0.02
+52,line_1,-0.18,-0.05,fqc,Stanford,RT,line_1,O-M OR9,Orion_gap_offset,-0.02
+53,line_1,-0.18,-0.05,fqc,Stanford,RT,line_1,O-M OR10,Orion_gap_offset,-0.02
+54,line_1,-0.18,-0.05,fqc,Stanford,RT,line_1,O-M OR11,Orion_gap_offset,-0.02
+55,line_1,-0.18,-0.05,fqc,Stanford,RT,line_1,O-M OR12,Orion_gap_offset,-0.02
+56,line_1,-0.05,0,fqc,Stanford,RT,line_1,Offset-A,Logo_gap_offset,0.03
+57,line_1,-0.05,0,fqc,Stanford,RT,line_1,Offset-B,Logo_gap_offset,0.03
+58,line_1,-0.05,0,fqc,Stanford,RT,line_1,Offset-C,Logo_gap_offset,0.03
+59,line_1,-0.05,0,fqc,Stanford,RT,line_1,Offset-D,Logo_gap_offset,0.03
+60,line_1,-0.05,0,fqc,Stanford,RT,line_1,Offset-E,Logo_gap_offset,0.03
+61,line_1,-0.05,0,fqc,Stanford,RT,line_1,Offset-F,Logo_gap_offset,0.03
+62,line_1,-0.05,0,fqc,Stanford,RT,line_1,Offset-G,Logo_gap_offset,0.03
+63,line_1,-0.05,0,fqc,Stanford,RT,line_1,Offset-H,Logo_gap_offset,0.03
+64,line_1,200,0,fqc,Stanford,RT,line_1,DCR,Scorpius function coupling test,285
+65,line_1,16.1,0,fqc,Stanford,RT,line_1,LS-127.772KHZ,Scorpius function coupling test,17.7
+66,line_1,1830,0,fqc,Stanford,RT,line_1,RS-127.772KHZ,Scorpius function coupling test,2200
+67,line_1,6.01,0,fqc,Stanford,RT,line_1,Q-127.772KHZ,Scorpius function coupling test,7.34
+68,line_1,0.435,0,fqc,Stanford,RT,line_1,Kmax Tx K,Scorpius function coupling test,0.605
+69,line_1,0.435,0,fqc,Stanford,RT,line_1,Kmin1 Tx K,Scorpius function coupling test,0.605
+70,line_1,0.435,0,fqc,Stanford,RT,line_1,Kmin2 Tx K,Scorpius function coupling test,0.605
+71,line_1,0.435,0,fqc,Stanford,RT,line_1,Kmin3 Tx K,Scorpius function coupling test,0.605
+72,line_1,0.435,0,fqc,Stanford,RT,line_1,Kmin4 Tx K,Scorpius function coupling test,0.605
+73,line_1,0,0,fqc,Stanford,RT,line_1,OPEN,Orion conductivity+function,50
+74,line_1,1000,0,fqc,Stanford,RT,line_1,SHORT,Orion conductivity+function,6000
+75,line_1,0,0,fqc,Stanford,RT,line_1,COMM,Orion conductivity+function,1200
+76,line_1,0,0,fqc,Stanford,RT,line_1,POWER,Orion conductivity+function,40
+77,line_1,0,0,fqc,Stanford,RT,line_1,GND,Orion conductivity+function,40
+78,line_1,0.02,0.05,fqc,Stanford,RT,line_1,ST1,RC/Strobe Gap/Offset,0.12
+79,line_1,0.02,0.05,fqc,Stanford,RT,line_1,ST2,RC/Strobe Gap/Offset,0.12
+80,line_1,0.02,0.05,fqc,Stanford,RT,line_1,ST3,RC/Strobe Gap/Offset,0.12
+81,line_1,0.02,0.05,fqc,Stanford,RT,line_1,ST4,RC/Strobe Gap/Offset,0.12
+82,line_1,-0.05,0,fqc,Stanford,RT,line_1,SPC O,SIM Tray to HSG offset,0
+83,line_1,-0.37,-0.32,fqc,Stanford,RT,line_1,HJ1,coil surface to HSG offset,-0.27
+84,line_1,-0.37,-0.32,fqc,Stanford,RT,line_1,HJ2,coil surface to HSG offset,-0.27
+85,line_1,-0.37,-0.32,fqc,Stanford,RT,line_1,HH1,coil surface to HSG offset,-0.27
+86,line_1,-0.37,-0.32,fqc,Stanford,RT,line_1,HH2,coil surface to HSG offset,-0.27
+87,line_1,5,0,fqc,Stanford,RT,line_1,HV,coil surface to HSG offset,5
+88,line_1,5,0,fqc,Stanford,RT,line_1,HU1,coil surface to HSG offset,5
+89,line_1,5,0,fqc,Stanford,RT,line_1,HU2,coil surface to HSG offset,5
+90,line_1,-10000,0,fqc,Stanford,RT,line_1,HE,HE,-350
+91,line_1,0,0,laser_qc,Stanford,RT,line_1,Gap_0_W,Noodle_gap_offset,0.05
+92,line_1,0,0,laser_qc,Stanford,RT,line_1,Gap_1_W,Noodle_gap_offset,0.05
+93,line_1,0,0,laser_qc,Stanford,RT,line_1,Gap_2_W,Noodle_gap_offset,0.05
+94,line_1,0,0,laser_qc,Stanford,RT,line_1,Gap_3_W,Noodle_gap_offset,0.05
+95,line_1,0,0,laser_qc,Stanford,RT,line_1,Gap_4_W,Noodle_gap_offset,0.05
+96,line_1,0,0,laser_qc,Stanford,RT,line_1,Gap_5_W,Noodle_gap_offset,0.05
+97,line_1,0,0,laser_qc,Stanford,RT,line_1,Gap_6_W,Noodle_gap_offset,0.05
+98,line_1,0,0,laser_qc,Stanford,RT,line_1,Gap_7_W,Noodle_gap_offset,0.05
+99,line_1,0,0,laser_qc,Stanford,RT,line_1,Gap_8_W,Noodle_gap_offset,0.05
+100,line_1,0,0,laser_qc,Stanford,RT,line_1,Gap_9_W,Noodle_gap_offset,0.05
+101,line_1,0,0,laser_qc,Stanford,RT,line_1,Gap_10_W,Noodle_gap_offset,0.05
+102,line_1,0,0,laser_qc,Stanford,RT,line_1,Gap_11_W,Noodle_gap_offset,0.05
+103,line_1,0,0,laser_qc,Stanford,RT,line_1,Gap_12_W,Noodle_gap_offset,0.05
+104,line_1,0,0,laser_qc,Stanford,RT,line_1,Gap_13_W,Noodle_gap_offset,0.05
+105,line_1,0,0,laser_qc,Stanford,RT,line_1,Gap_14_W,Noodle_gap_offset,0.05
+106,line_1,0,0,laser_qc,Stanford,RT,line_1,Gap_15_W,Noodle_gap_offset,0.05
+107,line_1,0,0,laser_qc,Stanford,RT,line_1,Gap_16_W,Noodle_gap_offset,0.05
+108,line_1,0,0,laser_qc,Stanford,RT,line_1,Gap_17_W,Noodle_gap_offset,0.05
+109,line_1,0,0,laser_qc,Stanford,RT,line_1,Gap_18_W,Noodle_gap_offset,0.05
+110,line_1,0,0,laser_qc,Stanford,RT,line_1,Gap_19_W,Noodle_gap_offset,0.05
+111,line_1,0,0,laser_qc,Stanford,RT,line_1,Gap_20_W,Noodle_gap_offset,0.05
+112,line_1,0,0,laser_qc,Stanford,RT,line_1,Gap_21_W,Noodle_gap_offset,0.05
+113,line_1,0,0,laser_qc,Stanford,RT,line_1,Gap_22_W,Noodle_gap_offset,0.05
+114,line_1,0,0,laser_qc,Stanford,RT,line_1,Gap_23_W,Noodle_gap_offset,0.05
+115,line_1,0,0,laser_qc,Stanford,RT,line_1,Gap_24_W,Noodle_gap_offset,0.05
+116,line_1,0,0,laser_qc,Stanford,RT,line_1,Gap_25_W,Noodle_gap_offset,0.05
+117,line_1,0,0,laser_qc,Stanford,RT,line_1,Gap_0_N,Noodle_gap_offset,0.05
+118,line_1,0,0,laser_qc,Stanford,RT,line_1,Gap_1_N,Noodle_gap_offset,0.05
+119,line_1,0,0,laser_qc,Stanford,RT,line_1,Gap_2_N,Noodle_gap_offset,0.05
+120,line_1,0,0,laser_qc,Stanford,RT,line_1,Gap_3_N,Noodle_gap_offset,0.05
+121,line_1,0,0,laser_qc,Stanford,RT,line_1,Gap_4_N,Noodle_gap_offset,0.05
+122,line_1,0,0,laser_qc,Stanford,RT,line_1,Gap_5_N,Noodle_gap_offset,0.05
+123,line_1,0,0,laser_qc,Stanford,RT,line_1,Gap_6_N,Noodle_gap_offset,0.05
+124,line_1,0,0,laser_qc,Stanford,RT,line_1,Gap_7_N,Noodle_gap_offset,0.05
+125,line_1,0,0,laser_qc,Stanford,RT,line_1,Gap_8_N,Noodle_gap_offset,0.05
+126,line_1,0,0,laser_qc,Stanford,RT,line_1,Gap_9_N,Noodle_gap_offset,0.05
+127,line_1,0,0,laser_qc,Stanford,RT,line_1,Gap_10_N,Noodle_gap_offset,0.05
+128,line_1,0,0,laser_qc,Stanford,RT,line_1,Gap_11_N,Noodle_gap_offset,0.05
+129,line_1,0,0,laser_qc,Stanford,RT,line_1,Gap_12_N,Noodle_gap_offset,0.05
+130,line_1,0,0,laser_qc,Stanford,RT,line_1,Gap_13_N,Noodle_gap_offset,0.05
+131,line_1,0,0,laser_qc,Stanford,RT,line_1,Gap_14_N,Noodle_gap_offset,0.05
+132,line_1,0,0,laser_qc,Stanford,RT,line_1,Gap_15_N,Noodle_gap_offset,0.05
+133,line_1,0,0,laser_qc,Stanford,RT,line_1,Gap_16_N,Noodle_gap_offset,0.05
+134,line_1,0,0,laser_qc,Stanford,RT,line_1,Gap_17_N,Noodle_gap_offset,0.05
+135,line_1,0,0,laser_qc,Stanford,RT,line_1,Gap_18_N,Noodle_gap_offset,0.05
+136,line_1,0,0,laser_qc,Stanford,RT,line_1,Gap_19_N,Noodle_gap_offset,0.05
+137,line_1,0,0,laser_qc,Stanford,RT,line_1,Gap_20_N,Noodle_gap_offset,0.05
+138,line_1,0,0,laser_qc,Stanford,RT,line_1,Gap_21_N,Noodle_gap_offset,0.05
+139,line_1,0,0,laser_qc,Stanford,RT,line_1,Gap_22_N,Noodle_gap_offset,0.05
+140,line_1,0,0,laser_qc,Stanford,RT,line_1,Gap_23_N,Noodle_gap_offset,0.05
+141,line_1,0,0,laser_qc,Stanford,RT,line_1,Gap_24_N,Noodle_gap_offset,0.05
+142,line_1,0,0,laser_qc,Stanford,RT,line_1,Gap_25_N,Noodle_gap_offset,0.05
+143,line_1,0,0,laser_qc,Stanford,RT,line_1,Gap_26,Noodle_gap_offset,0.05
+144,line_1,0,0,laser_qc,Stanford,RT,line_1,Gap_27,Noodle_gap_offset,0.05
+145,line_1,0,0,laser_qc,Stanford,RT,line_1,Gap_28,Noodle_gap_offset,0.05
+146,line_1,0,0,laser_qc,Stanford,RT,line_1,Gap_29,Noodle_gap_offset,0.05
+147,line_1,0,0,laser_qc,Stanford,RT,line_1,Gap_30,Noodle_gap_offset,0.05
+148,line_1,0,0,laser_qc,Stanford,RT,line_1,Gap_31,Noodle_gap_offset,0.05
+149,line_1,-0.05,0,laser_qc,Stanford,RT,line_1,Offset_0_W,Noodle_gap_offset,0.05
+150,line_1,-0.05,0,laser_qc,Stanford,RT,line_1,Offset_1_W,Noodle_gap_offset,0.05
+151,line_1,-0.05,0,laser_qc,Stanford,RT,line_1,Offset_2_W,Noodle_gap_offset,0.05
+152,line_1,-0.05,0,laser_qc,Stanford,RT,line_1,Offset_3_W,Noodle_gap_offset,0.05
+153,line_1,-0.05,0,laser_qc,Stanford,RT,line_1,Offset_4_W,Noodle_gap_offset,0.05
+154,line_1,-0.05,0,laser_qc,Stanford,RT,line_1,Offset_5_W,Noodle_gap_offset,0.05
+155,line_1,-0.05,0,laser_qc,Stanford,RT,line_1,Offset_6_W,Noodle_gap_offset,0.05
+156,line_1,-0.05,0,laser_qc,Stanford,RT,line_1,Offset_7_W,Noodle_gap_offset,0.05
+157,line_1,-0.05,0,laser_qc,Stanford,RT,line_1,Offset_8_W,Noodle_gap_offset,0.05
+158,line_1,-0.05,0,laser_qc,Stanford,RT,line_1,Offset_9_W,Noodle_gap_offset,0.05
+159,line_1,-0.05,0,laser_qc,Stanford,RT,line_1,Offset_10_W,Noodle_gap_offset,0.05
+160,line_1,-0.05,0,laser_qc,Stanford,RT,line_1,Offset_11_W,Noodle_gap_offset,0.05
+161,line_1,-0.05,0,laser_qc,Stanford,RT,line_1,Offset_12_W,Noodle_gap_offset,0.05
+162,line_1,-0.05,0,laser_qc,Stanford,RT,line_1,Offset_13_W,Noodle_gap_offset,0.05
+163,line_1,-0.05,0,laser_qc,Stanford,RT,line_1,Offset_14_W,Noodle_gap_offset,0.05
+164,line_1,-0.05,0,laser_qc,Stanford,RT,line_1,Offset_15_W,Noodle_gap_offset,0.05
+165,line_1,-0.05,0,laser_qc,Stanford,RT,line_1,Offset_16_W,Noodle_gap_offset,0.05
+166,line_1,-0.05,0,laser_qc,Stanford,RT,line_1,Offset_17_W,Noodle_gap_offset,0.05
+167,line_1,-0.05,0,laser_qc,Stanford,RT,line_1,Offset_18_W,Noodle_gap_offset,0.05
+168,line_1,-0.05,0,laser_qc,Stanford,RT,line_1,Offset_19_W,Noodle_gap_offset,0.05
+169,line_1,-0.05,0,laser_qc,Stanford,RT,line_1,Offset_20_W,Noodle_gap_offset,0.05
+170,line_1,-0.05,0,laser_qc,Stanford,RT,line_1,Offset_21_W,Noodle_gap_offset,0.05
+171,line_1,-0.05,0,laser_qc,Stanford,RT,line_1,Offset_22_W,Noodle_gap_offset,0.05
+172,line_1,-0.05,0,laser_qc,Stanford,RT,line_1,Offset_23_W,Noodle_gap_offset,0.05
+173,line_1,-0.05,0,laser_qc,Stanford,RT,line_1,Offset_24_W,Noodle_gap_offset,0.05
+174,line_1,-0.05,0,laser_qc,Stanford,RT,line_1,Offset_25_W,Noodle_gap_offset,0.05
+175,line_1,-0.05,0,laser_qc,Stanford,RT,line_1,Offset_0_N,Noodle_gap_offset,0.05
+176,line_1,-0.05,0,laser_qc,Stanford,RT,line_1,Offset_1_N,Noodle_gap_offset,0.05
+177,line_1,-0.05,0,laser_qc,Stanford,RT,line_1,Offset_2_N,Noodle_gap_offset,0.05
+178,line_1,-0.05,0,laser_qc,Stanford,RT,line_1,Offset_3_N,Noodle_gap_offset,0.05
+179,line_1,-0.05,0,laser_qc,Stanford,RT,line_1,Offset_4_N,Noodle_gap_offset,0.05
+180,line_1,-0.05,0,laser_qc,Stanford,RT,line_1,Offset_5_N,Noodle_gap_offset,0.05
+181,line_1,-0.05,0,laser_qc,Stanford,RT,line_1,Offset_6_N,Noodle_gap_offset,0.05
+182,line_1,-0.05,0,laser_qc,Stanford,RT,line_1,Offset_7_N,Noodle_gap_offset,0.05
+183,line_1,-0.05,0,laser_qc,Stanford,RT,line_1,Offset_8_N,Noodle_gap_offset,0.05
+184,line_1,-0.05,0,laser_qc,Stanford,RT,line_1,Offset_9_N,Noodle_gap_offset,0.05
+185,line_1,-0.05,0,laser_qc,Stanford,RT,line_1,Offset_10_N,Noodle_gap_offset,0.05
+186,line_1,-0.05,0,laser_qc,Stanford,RT,line_1,Offset_11_N,Noodle_gap_offset,0.05
+187,line_1,-0.05,0,laser_qc,Stanford,RT,line_1,Offset_12_N,Noodle_gap_offset,0.05
+188,line_1,-0.05,0,laser_qc,Stanford,RT,line_1,Offset_13_N,Noodle_gap_offset,0.05
+189,line_1,-0.05,0,laser_qc,Stanford,RT,line_1,Offset_14_N,Noodle_gap_offset,0.05
+190,line_1,-0.05,0,laser_qc,Stanford,RT,line_1,Offset_15_N,Noodle_gap_offset,0.05
+191,line_1,-0.05,0,laser_qc,Stanford,RT,line_1,Offset_16_N,Noodle_gap_offset,0.05
+192,line_1,-0.05,0,laser_qc,Stanford,RT,line_1,Offset_17_N,Noodle_gap_offset,0.05
+193,line_1,-0.05,0,laser_qc,Stanford,RT,line_1,Offset_18_N,Noodle_gap_offset,0.05
+194,line_1,-0.05,0,laser_qc,Stanford,RT,line_1,Offset_19_N,Noodle_gap_offset,0.05
+195,line_1,-0.05,0,laser_qc,Stanford,RT,line_1,Offset_20_N,Noodle_gap_offset,0.05
+196,line_1,-0.05,0,laser_qc,Stanford,RT,line_1,Offset_21_N,Noodle_gap_offset,0.05
+197,line_1,-0.05,0,laser_qc,Stanford,RT,line_1,Offset_22_N,Noodle_gap_offset,0.05
+198,line_1,-0.05,0,laser_qc,Stanford,RT,line_1,Offset_23_N,Noodle_gap_offset,0.05
+199,line_1,-0.05,0,laser_qc,Stanford,RT,line_1,Offset_24_N,Noodle_gap_offset,0.05
+200,line_1,-0.05,0,laser_qc,Stanford,RT,line_1,Offset_25_N,Noodle_gap_offset,0.05
+201,line_1,-0.05,0,laser_qc,Stanford,RT,line_1,Offset_26,Noodle_gap_offset,0.05
+202,line_1,-0.05,0,laser_qc,Stanford,RT,line_1,Offset_27,Noodle_gap_offset,0.05
+203,line_1,-0.05,0,laser_qc,Stanford,RT,line_1,Offset_28,Noodle_gap_offset,0.05
+204,line_1,-0.05,0,laser_qc,Stanford,RT,line_1,Offset_29,Noodle_gap_offset,0.05
+205,line_1,-0.05,0,laser_qc,Stanford,RT,line_1,Offset_30,Noodle_gap_offset,0.05
+206,line_1,-0.05,0,laser_qc,Stanford,RT,line_1,Offset_31,Noodle_gap_offset,0.05
+207,line_1,0,0,laser_qc,Stanford,RT,line_1,Waveness,Noodle_gap_offset,2
+208,line_1,0,0,laser_qc,Stanford,RT,line_1,AW_Noddle_Wp,Noodle_gap_offset,2
+209,line_1,-1,0,laser_qc,Stanford,RT,line_1,AW_Noddle_Wv,Noodle_gap_offset,1
+210,line_1,0,0,laser_qc,Stanford,RT,line_1,AW_Noddle_Wq,Noodle_gap_offset,2
+211,line_1,0,0,laser_qc,Stanford,RT,line_1,AW_Noddle_Wku,Noodle_gap_offset,10
+212,line_1,0,0,laser_qc,Stanford,RT,line_1,HSG_Noddle_Wp,Noodle_gap_offset,2
+213,line_1,-1,0,laser_qc,Stanford,RT,line_1,HSG_Noddle_Wv,Noodle_gap_offset,1
+214,line_1,0,0,laser_qc,Stanford,RT,line_1,HSG_Noddle_Wq,Noodle_gap_offset,1
+215,line_1,0,0,laser_qc,Stanford,RT,line_1,HSG_Noddle_Wku,Noodle_gap_offset,10
+216,line_1,1.7,1.8,laser_qc,Stanford,RT,line_1,SPC_MZ_C1,Split Width/Offset(4G),1.9
+217,line_1,1.7,1.8,laser_qc,Stanford,RT,line_1,SPC_MZ_C3,Split Width/Offset(4G),1.9
+218,line_1,1.7,1.8,laser_qc,Stanford,RT,line_1,SPC_MZ_C4,Split Width/Offset(4G),1.9
+219,line_1,1.7,1.8,laser_qc,Stanford,RT,line_1,SPC_MZ_C5,Split Width/Offset(4G),1.9
+220,line_1,1.7,1.8,laser_qc,Stanford,RT,line_1,SPC_MZ_C6,Split Width/Offset(4G),1.9
+221,line_1,1.7,1.8,laser_qc,Stanford,RT,line_1,SPC_MZ_C8,Split Width/Offset(4G),1.9
+222,line_1,1.7,1.8,laser_qc,Stanford,RT,line_1,SPC_MZ_C10,Split Width/Offset(4G),1.9
+223,line_1,1.7,1.8,laser_qc,Stanford,RT,line_1,SPC_MZ_C12,Split Width/Offset(4G),1.9
+224,line_1,1.7,1.8,laser_qc,Stanford,RT,line_1,SPC_MZ_C14,Split Width/Offset(4G),1.9
+225,line_1,1.7,1.8,laser_qc,Stanford,RT,line_1,SPC_MZ_C16,Split Width/Offset(4G),1.9
+226,line_1,1.7,1.8,laser_qc,Stanford,RT,line_1,SPC_MZ_C18,Split Width/Offset(4G),1.9
+227,line_1,1.7,1.8,laser_qc,Stanford,RT,line_1,SPC_MZ_C20,Split Width/Offset(4G),1.9
+228,line_1,1.7,1.8,laser_qc,Stanford,RT,line_1,SPC_MZ_C22,Split Width/Offset(4G),1.9
+229,line_1,1.7,1.8,laser_qc,Stanford,RT,line_1,SPC_MZ_C23,Split Width/Offset(4G),1.9
+230,line_1,1.7,1.8,laser_qc,Stanford,RT,line_1,SPC_MZ_C24,Split Width/Offset(4G),1.9
+231,line_1,1.7,1.8,laser_qc,Stanford,RT,line_1,SPC_MZ_C25,Split Width/Offset(4G),1.9
+232,line_1,1.7,1.8,laser_qc,Stanford,RT,line_1,SPC_MZ_C26,Split Width/Offset(4G),1.9
+233,line_1,1.7,1.8,laser_qc,Stanford,RT,line_1,SPC_MN_F1,Split Width/Offset(4G),1.9
+234,line_1,1.7,1.8,laser_qc,Stanford,RT,line_1,SPC_MN_F3,Split Width/Offset(4G),1.9
+235,line_1,1.7,1.8,laser_qc,Stanford,RT,line_1,SPC_MN_F4,Split Width/Offset(4G),1.9
+236,line_1,1.7,1.8,laser_qc,Stanford,RT,line_1,SPC_MN_F5,Split Width/Offset(4G),1.9
+237,line_1,1.7,1.8,laser_qc,Stanford,RT,line_1,SPC_MN_F6,Split Width/Offset(4G),1.9
+238,line_1,1.7,1.8,laser_qc,Stanford,RT,line_1,SPC_MN_F8,Split Width/Offset(4G),1.9
+239,line_1,1.7,1.8,laser_qc,Stanford,RT,line_1,SPC_MN_F10,Split Width/Offset(4G),1.9
+240,line_1,1.7,1.8,laser_qc,Stanford,RT,line_1,SPC_MN_F12,Split Width/Offset(4G),1.9
+241,line_1,1.7,1.8,laser_qc,Stanford,RT,line_1,SPC_MN_F14,Split Width/Offset(4G),1.9
+242,line_1,1.7,1.8,laser_qc,Stanford,RT,line_1,SPC_MN_F16,Split Width/Offset(4G),1.9
+243,line_1,1.7,1.8,laser_qc,Stanford,RT,line_1,SPC_MN_F18,Split Width/Offset(4G),1.9
+244,line_1,1.7,1.8,laser_qc,Stanford,RT,line_1,SPC_MN_F20,Split Width/Offset(4G),1.9
+245,line_1,1.7,1.8,laser_qc,Stanford,RT,line_1,SPC_MN_F22,Split Width/Offset(4G),1.9
+246,line_1,1.7,1.8,laser_qc,Stanford,RT,line_1,SPC_MN_F23,Split Width/Offset(4G),1.9
+247,line_1,1.7,1.8,laser_qc,Stanford,RT,line_1,SPC_MN_F24,Split Width/Offset(4G),1.9
+248,line_1,1.7,1.8,laser_qc,Stanford,RT,line_1,SPC_MN_F25,Split Width/Offset(4G),1.9
+249,line_1,1.7,1.8,laser_qc,Stanford,RT,line_1,SPC_MN_F26,Split Width/Offset(4G),1.9
+250,line_1,-0.02,0,laser_qc,Stanford,RT,line_1,SPC_OY_F1-W,Split Width/Offset(4G),0.04
+251,line_1,-0.02,0,laser_qc,Stanford,RT,line_1,SPC_OY_F3-W,Split Width/Offset(4G),0.04
+252,line_1,-0.02,0,laser_qc,Stanford,RT,line_1,SPC_OY_F4-W,Split Width/Offset(4G),0.04
+253,line_1,-0.02,0,laser_qc,Stanford,RT,line_1,SPC_OY_F5-W,Split Width/Offset(4G),0.04
+254,line_1,-0.02,0,laser_qc,Stanford,RT,line_1,SPC_OY_F6-W,Split Width/Offset(4G),0.04
+255,line_1,-0.02,0,laser_qc,Stanford,RT,line_1,SPC_OY_F8-W,Split Width/Offset(4G),0.04
+256,line_1,-0.02,0,laser_qc,Stanford,RT,line_1,SPC_OY_F10-W,Split Width/Offset(4G),0.04
+257,line_1,-0.02,0,laser_qc,Stanford,RT,line_1,SPC_OY_F12-W,Split Width/Offset(4G),0.04
+258,line_1,-0.02,0,laser_qc,Stanford,RT,line_1,SPC_OY_F14-W,Split Width/Offset(4G),0.04
+259,line_1,-0.02,0,laser_qc,Stanford,RT,line_1,SPC_OY_F16-W,Split Width/Offset(4G),0.04
+260,line_1,-0.02,0,laser_qc,Stanford,RT,line_1,SPC_OY_F18-W,Split Width/Offset(4G),0.04
+261,line_1,-0.02,0,laser_qc,Stanford,RT,line_1,SPC_OY_F20-W,Split Width/Offset(4G),0.04
+262,line_1,-0.02,0,laser_qc,Stanford,RT,line_1,SPC_OY_F22-W,Split Width/Offset(4G),0.04
+263,line_1,-0.02,0,laser_qc,Stanford,RT,line_1,SPC_OY_F23-W,Split Width/Offset(4G),0.04
+264,line_1,-0.02,0,laser_qc,Stanford,RT,line_1,SPC_OY_F24-W,Split Width/Offset(4G),0.04
+265,line_1,-0.02,0,laser_qc,Stanford,RT,line_1,SPC_OY_F25-W,Split Width/Offset(4G),0.04
+266,line_1,-0.02,0,laser_qc,Stanford,RT,line_1,SPC_OY_F26-W,Split Width/Offset(4G),0.04
+267,line_1,-0.02,0,laser_qc,Stanford,RT,line_1,SPC_OY_F1-N,Split Width/Offset(4G),0.04
+268,line_1,-0.02,0,laser_qc,Stanford,RT,line_1,SPC_OY_F3-N,Split Width/Offset(4G),0.04
+269,line_1,-0.02,0,laser_qc,Stanford,RT,line_1,SPC_OY_F4-N,Split Width/Offset(4G),0.04
+270,line_1,-0.02,0,laser_qc,Stanford,RT,line_1,SPC_OY_F5-N,Split Width/Offset(4G),0.04
+271,line_1,-0.02,0,laser_qc,Stanford,RT,line_1,SPC_OY_F6-N,Split Width/Offset(4G),0.04
+272,line_1,-0.02,0,laser_qc,Stanford,RT,line_1,SPC_OY_F8-N,Split Width/Offset(4G),0.04
+273,line_1,-0.02,0,laser_qc,Stanford,RT,line_1,SPC_OY_F10-N,Split Width/Offset(4G),0.04
+274,line_1,-0.02,0,laser_qc,Stanford,RT,line_1,SPC_OY_F12-N,Split Width/Offset(4G),0.04
+275,line_1,-0.02,0,laser_qc,Stanford,RT,line_1,SPC_OY_F14-N,Split Width/Offset(4G),0.04
+276,line_1,-0.02,0,laser_qc,Stanford,RT,line_1,SPC_OY_F16-N,Split Width/Offset(4G),0.04
+277,line_1,-0.02,0,laser_qc,Stanford,RT,line_1,SPC_OY_F18-N,Split Width/Offset(4G),0.04
+278,line_1,-0.02,0,laser_qc,Stanford,RT,line_1,SPC_OY_F20-N,Split Width/Offset(4G),0.04
+279,line_1,-0.02,0,laser_qc,Stanford,RT,line_1,SPC_OY_F22-N,Split Width/Offset(4G),0.04
+280,line_1,-0.02,0,laser_qc,Stanford,RT,line_1,SPC_OY_F23-N,Split Width/Offset(4G),0.04
+281,line_1,-0.02,0,laser_qc,Stanford,RT,line_1,SPC_OY_F24-N,Split Width/Offset(4G),0.04
+282,line_1,-0.02,0,laser_qc,Stanford,RT,line_1,SPC_OY_F25-N,Split Width/Offset(4G),0.04
+283,line_1,-0.02,0,laser_qc,Stanford,RT,line_1,SPC_OY_F26-N,Split Width/Offset(4G),0.04
+284,line_1,-0.02,0,laser_qc,Stanford,RT,line_1,SPC_MW_C1-W,Split Width/Offset(4G),0.04
+285,line_1,-0.02,0,laser_qc,Stanford,RT,line_1,SPC_MW_C3-W,Split Width/Offset(4G),0.04
+286,line_1,-0.02,0,laser_qc,Stanford,RT,line_1,SPC_MW_C4-W,Split Width/Offset(4G),0.04
+287,line_1,-0.02,0,laser_qc,Stanford,RT,line_1,SPC_MW_C5-W,Split Width/Offset(4G),0.04
+288,line_1,-0.02,0,laser_qc,Stanford,RT,line_1,SPC_MW_C6-W,Split Width/Offset(4G),0.04
+289,line_1,-0.02,0,laser_qc,Stanford,RT,line_1,SPC_MW_C8-W,Split Width/Offset(4G),0.04
+290,line_1,-0.02,0,laser_qc,Stanford,RT,line_1,SPC_MW_C10-W,Split Width/Offset(4G),0.04
+291,line_1,-0.02,0,laser_qc,Stanford,RT,line_1,SPC_MW_C12-W,Split Width/Offset(4G),0.04
+292,line_1,-0.02,0,laser_qc,Stanford,RT,line_1,SPC_MW_C14-W,Split Width/Offset(4G),0.04
+293,line_1,-0.02,0,laser_qc,Stanford,RT,line_1,SPC_MW_C16-W,Split Width/Offset(4G),0.04
+294,line_1,-0.02,0,laser_qc,Stanford,RT,line_1,SPC_MW_C18-W,Split Width/Offset(4G),0.04
+295,line_1,-0.02,0,laser_qc,Stanford,RT,line_1,SPC_MW_C20-W,Split Width/Offset(4G),0.04
+296,line_1,-0.02,0,laser_qc,Stanford,RT,line_1,SPC_MW_C22-W,Split Width/Offset(4G),0.04
+297,line_1,-0.02,0,laser_qc,Stanford,RT,line_1,SPC_MW_C23-W,Split Width/Offset(4G),0.04
+298,line_1,-0.02,0,laser_qc,Stanford,RT,line_1,SPC_MW_C24-W,Split Width/Offset(4G),0.04
+299,line_1,-0.02,0,laser_qc,Stanford,RT,line_1,SPC_MW_C25-W,Split Width/Offset(4G),0.04
+300,line_1,-0.02,0,laser_qc,Stanford,RT,line_1,SPC_MW_C26-W,Split Width/Offset(4G),0.04
+301,line_1,-0.02,0,laser_qc,Stanford,RT,line_1,SPC_MW_C1-N,Split Width/Offset(4G),0.04
+302,line_1,-0.02,0,laser_qc,Stanford,RT,line_1,SPC_MW_C3-N,Split Width/Offset(4G),0.04
+303,line_1,-0.02,0,laser_qc,Stanford,RT,line_1,SPC_MW_C4-N,Split Width/Offset(4G),0.04
+304,line_1,-0.02,0,laser_qc,Stanford,RT,line_1,SPC_MW_C5-N,Split Width/Offset(4G),0.04
+305,line_1,-0.02,0,laser_qc,Stanford,RT,line_1,SPC_MW_C6-N,Split Width/Offset(4G),0.04
+306,line_1,-0.02,0,laser_qc,Stanford,RT,line_1,SPC_MW_C8-N,Split Width/Offset(4G),0.04
+307,line_1,-0.02,0,laser_qc,Stanford,RT,line_1,SPC_MW_C10-N,Split Width/Offset(4G),0.04
+308,line_1,-0.02,0,laser_qc,Stanford,RT,line_1,SPC_MW_C12-N,Split Width/Offset(4G),0.04
+309,line_1,-0.02,0,laser_qc,Stanford,RT,line_1,SPC_MW_C14-N,Split Width/Offset(4G),0.04
+310,line_1,-0.02,0,laser_qc,Stanford,RT,line_1,SPC_MW_C16-N,Split Width/Offset(4G),0.04
+311,line_1,-0.02,0,laser_qc,Stanford,RT,line_1,SPC_MW_C18-N,Split Width/Offset(4G),0.04
+312,line_1,-0.02,0,laser_qc,Stanford,RT,line_1,SPC_MW_C20-N,Split Width/Offset(4G),0.04
+313,line_1,-0.02,0,laser_qc,Stanford,RT,line_1,SPC_MW_C22-N,Split Width/Offset(4G),0.04
+314,line_1,-0.02,0,laser_qc,Stanford,RT,line_1,SPC_MW_C23-N,Split Width/Offset(4G),0.04
+315,line_1,-0.02,0,laser_qc,Stanford,RT,line_1,SPC_MW_C24-N,Split Width/Offset(4G),0.04
+316,line_1,-0.02,0,laser_qc,Stanford,RT,line_1,SPC_MW_C25-N,Split Width/Offset(4G),0.04
+317,line_1,-0.02,0,laser_qc,Stanford,RT,line_1,SPC_MW_C26-N,Split Width/Offset(4G),0.04
+318,line_1,12.925,12.825,laser_qc,Stanford,RT,line_1,SPC-QQ,Noodle slot width & depth binning,12.725
+319,line_1,12.925,12.825,laser_qc,Stanford,RT,line_1,SPC-QR,Noodle slot width & depth binning,12.725
+320,line_1,211.339,211.239,laser_qc,Stanford,RT,line_1,SPC-QS,Noodle slot width & depth binning,211.139
+321,line_1,1.76,1.8,laser_qc,Stanford,RT,line_1,SPC_PQ_F1,Noodle slot width & depth binning,1.85
+322,line_1,1.76,1.8,laser_qc,Stanford,RT,line_1,SPC_PQ_F3,Noodle slot width & depth binning,1.85
+323,line_1,1.76,1.8,laser_qc,Stanford,RT,line_1,SPC_PQ_F6,Noodle slot width & depth binning,1.85
+324,line_1,1.76,1.8,laser_qc,Stanford,RT,line_1,SPC_PQ_F9,Noodle slot width & depth binning,1.85
+325,line_1,1.76,1.8,laser_qc,Stanford,RT,line_1,SPC_PQ_F11,Noodle slot width & depth binning,1.85
+326,line_1,1.76,1.8,laser_qc,Stanford,RT,line_1,SPC_PQ_F14,Noodle slot width & depth binning,1.85
+327,line_1,1.76,1.8,laser_qc,Stanford,RT,line_1,SPC_PQ_F17,Noodle slot width & depth binning,1.85
+328,line_1,1.76,1.8,laser_qc,Stanford,RT,line_1,SPC_PQ_F19,Noodle slot width & depth binning,1.85
+329,line_1,1.76,1.8,laser_qc,Stanford,RT,line_1,SPC_PQ_F21,Noodle slot width & depth binning,1.85
+330,line_1,1.76,1.8,laser_qc,Stanford,RT,line_1,SPC_PQ_F24,Noodle slot width & depth binning,1.85
+331,line_1,1.76,1.8,laser_qc,Stanford,RT,line_1,SPC_PQ_F26,Noodle slot width & depth binning,1.85
+332,line_1,1.76,1.8,laser_qc,Stanford,RT,line_1,Average,Noodle slot width & depth binning,1.85
+333,line_1,0,0,laser_qc,Stanford,RT,line_1,Range_G,Noodle slot width & depth binning,0.05
+334,line_1,0.4,0.45,laser_qc,Stanford,RT,line_1,RC1,HSG Logo Flange Binning,0.5
+335,line_1,0.4,0.45,laser_qc,Stanford,RT,line_1,RC2,HSG Logo Flange Binning,0.5
+336,line_1,0.4,0.45,laser_qc,Stanford,RT,line_1,SC1,HSG Logo Flange Binning,0.5
+337,line_1,0.4,0.45,laser_qc,Stanford,RT,line_1,SC2,HSG Logo Flange Binning,0.5
+338,line_1,0.29,0.35,laser_qc,Stanford,RT,line_1,A,HSG Logo Flange Binning,0.41
+339,line_1,0.29,0.35,laser_qc,Stanford,RT,line_1,C,HSG Logo Flange Binning,0.41
+340,line_1,0.29,0.35,laser_qc,Stanford,RT,line_1,E,HSG Logo Flange Binning,0.41
+341,line_1,0.29,0.35,laser_qc,Stanford,RT,line_1,G,HSG Logo Flange Binning,0.41
+342,line_1,0.29,0.35,laser_qc,Stanford,RT,line_1,H,HSG Logo Flange Binning,0.41
+343,line_1,0.38,0.35,laser_qc,Stanford,RT,line_1,OR1,HSG Logo Flange Binning,0.32
+344,line_1,0.38,0.35,laser_qc,Stanford,RT,line_1,OR2,HSG Logo Flange Binning,0.32
+345,line_1,0.29,0.35,laser_qc,Stanford,RT,line_1,Average,HSG Logo Flange Binning,0.41
+346,line_1,-0.975,-0.935,laser_qc,Stanford,RT,line_1,SPC OF-1,SIM Tray depth binning(4G),-0.895
+347,line_1,-0.975,-0.935,laser_qc,Stanford,RT,line_1,SPC OF-2,SIM Tray depth binning(4G),-0.895
+348,line_1,-0.975,-0.935,laser_qc,Stanford,RT,line_1,Average,SIM Tray depth binning(4G),-0.895
+349,line_1,0.55,0.6,laser_qc,Stanford,RT,line_1,Data1,Magnet slot thickness,0.65
+350,line_1,0.55,0.6,laser_qc,Stanford,RT,line_1,Data2,Magnet slot thickness,0.65
+351,line_1,0.43,0.5,laser_qc,Stanford,RT,line_1,Data3,Magnet slot thickness,0.57
+352,line_1,0.43,0.5,laser_qc,Stanford,RT,line_1,Data4,Magnet slot thickness,0.57
+353,line_1,0,0,laser_qc,Stanford,RT,line_1,SPC-D,Backside Flatness+Bowing（Wifi）,0.8
+354,line_1,-0.25,0,laser_qc,Stanford,RT,line_1,Side1,Backside Flatness+Bowing（Wifi）,0.2
+355,line_1,-0.3,0,laser_qc,Stanford,RT,line_1,Side2,Backside Flatness+Bowing（Wifi）,0.2
+356,line_1,-0.25,0,laser_qc,Stanford,RT,line_1,Side3,Backside Flatness+Bowing（Wifi）,0.2
+357,line_1,-0.3,0,laser_qc,Stanford,RT,line_1,Side4,Backside Flatness+Bowing（Wifi）,0.2
+358,line_1,-1,0,laser_qc,Stanford,RT,line_1,A5B2,Backside Flatness+Bowing（Wifi）,1
+359,line_1,-1,0,laser_qc,Stanford,RT,line_1,A3B3,Backside Flatness+Bowing（Wifi）,1
+360,line_1,-1,0,laser_qc,Stanford,RT,line_1,A7B3,Backside Flatness+Bowing（Wifi）,1
+361,line_1,-1,0,laser_qc,Stanford,RT,line_1,A5B4,Backside Flatness+Bowing（Wifi）,1
+362,line_1,-1,0,laser_qc,Stanford,RT,line_1,A2B5,Backside Flatness+Bowing（Wifi）,1
+363,line_1,-1,0,laser_qc,Stanford,RT,line_1,A4B5,Backside Flatness+Bowing（Wifi）,1
+364,line_1,-1,0,laser_qc,Stanford,RT,line_1,A6B5,Backside Flatness+Bowing（Wifi）,1
+365,line_1,-1,0,laser_qc,Stanford,RT,line_1,A8B5,Backside Flatness+Bowing（Wifi）,1
+366,line_1,-1,0,laser_qc,Stanford,RT,line_1,A5B6,Backside Flatness+Bowing（Wifi）,1
+367,line_1,-1,0,laser_qc,Stanford,RT,line_1,A3B7,Backside Flatness+Bowing（Wifi）,1
+368,line_1,-1,0,laser_qc,Stanford,RT,line_1,A7B7,Backside Flatness+Bowing（Wifi）,1
+369,line_1,-1,0,laser_qc,Stanford,RT,line_1,A5B8,Backside Flatness+Bowing（Wifi）,1
+370,line_1,0,0,laser_qc,Stanford,RT,line_1,SPC-D,Backside Flatness + Bowing（4G）,0.8
+371,line_1,-0.5,0,laser_qc,Stanford,RT,line_1,Side1,Backside Flatness + Bowing（4G）,0.2
+372,line_1,-0.3,0,laser_qc,Stanford,RT,line_1,Side2,Backside Flatness + Bowing（4G）,0.3
+373,line_1,-0.5,0,laser_qc,Stanford,RT,line_1,Side3,Backside Flatness + Bowing（4G）,0.2
+374,line_1,-0.3,0,laser_qc,Stanford,RT,line_1,Side4,Backside Flatness + Bowing（4G）,0.3
+375,line_1,0,0,laser_qc,Stanford,RT,line_1,Side1-Zmax,Backside Flatness + Bowing（4G）,0.4
+376,line_1,0,0,laser_qc,Stanford,RT,line_1,Side1-Xmax,Backside Flatness + Bowing（4G）,183
+377,line_1,0,0,laser_qc,Stanford,RT,line_1,Side1-Zmin,Backside Flatness + Bowing（4G）,0.4
+378,line_1,0,0,laser_qc,Stanford,RT,line_1,Side1-Xmin,Backside Flatness + Bowing（4G）,183
+379,line_1,0,0,laser_qc,Stanford,RT,line_1,Side3-Zmax,Backside Flatness + Bowing（4G）,0.4
+380,line_1,0,0,laser_qc,Stanford,RT,line_1,Side3-Xmax,Backside Flatness + Bowing（4G）,183
+381,line_1,0,0,laser_qc,Stanford,RT,line_1,Side3-Zmin,Backside Flatness + Bowing（4G）,0.4
+382,line_1,0,0,laser_qc,Stanford,RT,line_1,Side3-Xmin,Backside Flatness + Bowing（4G）,183
+383,line_1,-1,0,laser_qc,Stanford,RT,line_1,A5B2,Backside Flatness + Bowing（4G）,1
+384,line_1,-1,0,laser_qc,Stanford,RT,line_1,A3B3,Backside Flatness + Bowing（4G）,1
+385,line_1,-1,0,laser_qc,Stanford,RT,line_1,A7B3,Backside Flatness + Bowing（4G）,1
+386,line_1,-1,0,laser_qc,Stanford,RT,line_1,A5B4,Backside Flatness + Bowing（4G）,1
+387,line_1,-1,0,laser_qc,Stanford,RT,line_1,A2B5,Backside Flatness + Bowing（4G）,1
+388,line_1,-1,0,laser_qc,Stanford,RT,line_1,A4B5,Backside Flatness + Bowing（4G）,1
+389,line_1,-1,0,laser_qc,Stanford,RT,line_1,A6B5,Backside Flatness + Bowing（4G）,1
+390,line_1,-1,0,laser_qc,Stanford,RT,line_1,A8B5,Backside Flatness + Bowing（4G）,1
+391,line_1,-1,0,laser_qc,Stanford,RT,line_1,A5B6,Backside Flatness + Bowing（4G）,1
+392,line_1,-1,0,laser_qc,Stanford,RT,line_1,A3B7,Backside Flatness + Bowing（4G）,1
+393,line_1,-1,0,laser_qc,Stanford,RT,line_1,A7B7,Backside Flatness + Bowing（4G）,1
+394,line_1,-1,0,laser_qc,Stanford,RT,line_1,A5B8,Backside Flatness + Bowing（4G）,1
+395,line_1,213.078,213.098,laser_qc,Stanford,RT,line_1,A2A17,Inner XY,213.248
+396,line_1,213.078,213.098,laser_qc,Stanford,RT,line_1,A5A14,Inner XY,213.248
+397,line_1,213.078,213.098,laser_qc,Stanford,RT,line_1,A11A8,Inner XY,213.248
+398,line_1,278.742,213.762,laser_qc,Stanford,RT,line_1,B2B17,Inner XY,278.912
+399,line_1,278.742,213.762,laser_qc,Stanford,RT,line_1,B5B14,Inner XY,278.912
+400,line_1,278.742,213.762,laser_qc,Stanford,RT,line_1,B8B11,Inner XY,278.912
+401,line_1,0,0,laser_qc,Stanford,RT,line_1,SPC_C,Datum A Flatness,0.8
+402,line_1,-1,0,laser_qc,Stanford,RT,line_1,A2,Datum A Flatness,1
+403,line_1,-1,0,laser_qc,Stanford,RT,line_1,A3,Datum A Flatness,1
+404,line_1,-1,0,laser_qc,Stanford,RT,line_1,A4,Datum A Flatness,1
+405,line_1,-1,0,laser_qc,Stanford,RT,line_1,A5,Datum A Flatness,1
+406,line_1,-1,0,laser_qc,Stanford,RT,line_1,A6,Datum A Flatness,1
+407,line_1,-1,0,laser_qc,Stanford,RT,line_1,A7,Datum A Flatness,1
+408,line_1,-1,0,laser_qc,Stanford,RT,line_1,A8,Datum A Flatness,1
+409,line_1,-1,0,laser_qc,Stanford,RT,line_1,P1,Datum A Flatness,1
+410,line_1,-1,0,laser_qc,Stanford,RT,line_1,B17,Datum A Flatness,1
+411,line_1,-1,0,laser_qc,Stanford,RT,line_1,B16,Datum A Flatness,1
+412,line_1,-1,0,laser_qc,Stanford,RT,line_1,B15,Datum A Flatness,1
+413,line_1,-1,0,laser_qc,Stanford,RT,line_1,B14,Datum A Flatness,1
+414,line_1,-1,0,laser_qc,Stanford,RT,line_1,B13,Datum A Flatness,1
+415,line_1,-1,0,laser_qc,Stanford,RT,line_1,B12,Datum A Flatness,1
+416,line_1,-1,0,laser_qc,Stanford,RT,line_1,B11,Datum A Flatness,1
+417,line_1,-1,0,laser_qc,Stanford,RT,line_1,P37,Datum A Flatness,1
+418,line_1,-1,0,laser_qc,Stanford,RT,line_1,A11,Datum A Flatness,1
+419,line_1,-1,0,laser_qc,Stanford,RT,line_1,A12,Datum A Flatness,1
+420,line_1,-1,0,laser_qc,Stanford,RT,line_1,A13,Datum A Flatness,1
+421,line_1,-1,0,laser_qc,Stanford,RT,line_1,A14,Datum A Flatness,1
+422,line_1,-1,0,laser_qc,Stanford,RT,line_1,A15,Datum A Flatness,1
+423,line_1,-1,0,laser_qc,Stanford,RT,line_1,A16,Datum A Flatness,1
+424,line_1,-1,0,laser_qc,Stanford,RT,line_1,A17,Datum A Flatness,1
+425,line_1,-1,0,laser_qc,Stanford,RT,line_1,P29,Datum A Flatness,1
+426,line_1,-1,0,laser_qc,Stanford,RT,line_1,B8,Datum A Flatness,1
+427,line_1,-1,0,laser_qc,Stanford,RT,line_1,B7,Datum A Flatness,1
+428,line_1,-1,0,laser_qc,Stanford,RT,line_1,B6,Datum A Flatness,1
+429,line_1,-1,0,laser_qc,Stanford,RT,line_1,B5,Datum A Flatness,1
+430,line_1,-1,0,laser_qc,Stanford,RT,line_1,B4,Datum A Flatness,1
+431,line_1,-1,0,laser_qc,Stanford,RT,line_1,B3,Datum A Flatness,1
+432,line_1,-1,0,laser_qc,Stanford,RT,line_1,B2,Datum A Flatness,1
+433,line_1,-1,0,laser_qc,Stanford,RT,line_1,P9,Datum A Flatness,1
+434,line_1,-1,0,laser_qc,Stanford,RT,line_1,C1,Datum A Flatness,1
+435,line_1,-1,0,laser_qc,Stanford,RT,line_1,C2,Datum A Flatness,1
+436,line_1,-1,0,laser_qc,Stanford,RT,line_1,C3,Datum A Flatness,1
+437,line_1,-1,0,laser_qc,Stanford,RT,line_1,C4,Datum A Flatness,1

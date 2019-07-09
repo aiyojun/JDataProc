@@ -1,6 +1,7 @@
 package com.jpro;
 
 import com.mongodb.MongoClient;
+import com.mongodb.client.MongoCursor;
 import com.mongodb.client.model.UpdateOptions;
 import lombok.extern.log4j.Log4j2;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
@@ -12,7 +13,9 @@ import org.apache.kafka.clients.producer.ProducerRecord;
 import org.bson.Document;
 
 import java.time.Duration;
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 import java.util.Properties;
 
 import static com.mongodb.client.model.Filters.eq;
@@ -53,8 +56,12 @@ public class Porter {
     private void prepare() {
         if (context.getProperty("mode").toLowerCase().equals("cnc")) {
             dataProc = new CNCDataProc(context);
+        } else if (context.getProperty("mode").toLowerCase().equals("spm")) {
+            dataProc = new SPMDataProc(context);
+        } else if (context.getProperty("mode").toLowerCase().equals("sn")) {
+            dataProc = new SNDataProc(context);
         } else {
-            dataProc = new SimpDataProc();
+            dataProc = new SimpDataProc(context);
         }
         if (context.getProperty("filter.switch").toLowerCase().equals( "true")) {
             needFilter = true;
@@ -103,6 +110,15 @@ public class Porter {
                             doStoreExceptionData(new Document("raw", record.value()));
                             continue;
                         }
+
+                        try {
+                            dataProc.doFilter(row);
+                        } catch (Exception e) {
+                            log.error("Check data error - " + e);
+                            doStoreExceptionData(Document.parse(record.value()));
+                            continue;
+                        }
+
                         if (needFilter) {
                             try {
                                 row = dataProc.doFilter(row);
@@ -124,6 +140,20 @@ public class Porter {
                                 continue;
                             }
                             doStore(storageData);
+
+                            // TODO: notify
+                        /*    if (needNotify) {
+                                // 1.
+                                boolean ensureDo = doQuery(sn);
+
+                                if (ensureDo) {
+                                    // 2.
+                                    notifyData = generateNotifyData(row);
+
+                                    // 3.
+                                    doNotify(notifyData);
+                                }
+                            }*/
 
                             if (needNotify) {
                                 Document notifyData;
@@ -162,15 +192,30 @@ public class Porter {
         log.info("Porter::doStoreExceptionData complete");
     }
 
+//    private List<Document> doQuery(String uni) {
+//        List<Document> _r = new ArrayList<>();
+//        for (Document document : mongo.getDatabase(context.getProperty("storage.mongo.database"))
+//                .getCollection(context.getProperty("storage.aim.collection"))
+//                .find(regex("_id", uni + "_*"))) {
+//            _r.add(document);
+//        }
+//        return _r;
+//    }
+
     private void doNotify(Document row) {
         row.forEach((k, v) -> {
-            System.out.println(k + " - " + v);
+            log.info(k + " - " + v);
         });
         String sn = row.getString(context.getProperty("unique.field"));
-        System.out.println("sn: " + sn);
-        boolean needUpdate = mongo.getDatabase(context.getProperty("storage.mongo.database"))
+        log.info("sn: " + sn);
+        if (sn == null) {
+            log.error("{} is null! please check properties file.", context.getProperty("unique.field"));
+            return;
+        }
+        MongoCursor mongoCursor = mongo.getDatabase(context.getProperty("storage.mongo.database"))
                 .getCollection(context.getProperty("storage.aim.collection"))
-                .find(regex("_id", sn + "_*")).iterator().hasNext();
+                .find(regex("_id", sn + "_*")).iterator();
+        boolean needUpdate = mongoCursor.hasNext();
         if (needUpdate) {
             log.info("Find old record in AIM, Do notify.");
             producer.send(new ProducerRecord<>(context.getProperty("notify.kafka.topic"), sn, row.toJson()));

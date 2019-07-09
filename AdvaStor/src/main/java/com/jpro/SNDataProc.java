@@ -7,12 +7,12 @@ import java.util.Map;
 import java.util.Properties;
 
 @Log4j2
-public class SimpDataProc implements AbstDataProc {
+public class SNDataProc implements AbstDataProc {
     Properties context;
 
     private Map<String, String> colorDict;
 
-    SimpDataProc(Properties pro) {
+    SNDataProc(Properties pro) {
         context = pro;
         colorDict = ComToo.generateColorDict(context.getProperty("color.dict"));
     }
@@ -20,6 +20,10 @@ public class SimpDataProc implements AbstDataProc {
     @Override
     public Document doVerify(Document orig) {
         if (!orig.containsKey(context.getProperty("unique.field"))
+                || !orig.containsKey(context.getProperty("option.field1"))
+                || !orig.containsKey(context.getProperty("option.field2"))
+                || !orig.containsKey(context.getProperty("option.field3"))
+                || !orig.containsKey(context.getProperty("option.field4"))
         ) {
             throw new RuntimeException("lack of necessary field");
         }
@@ -28,6 +32,14 @@ public class SimpDataProc implements AbstDataProc {
 
     @Override
     public Document doFilter(Document orig) {
+        if (orig.containsKey(context.getProperty("color.field")) && orig.get(context.getProperty("color.field")) instanceof String) {
+            String colorValue = orig.getString(context.getProperty("color.field"));
+            if (colorDict.containsKey(colorValue)) {
+                orig.put(context.getProperty("color.field"), colorDict.get(colorValue));
+            } else {
+                log.warn("No such color [ " + colorValue + "] in color dict.");
+            }
+        }
         return orig;
     }
 

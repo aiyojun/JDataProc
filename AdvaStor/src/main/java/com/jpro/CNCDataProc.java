@@ -19,6 +19,16 @@ public class CNCDataProc implements AbstDataProc {
     }
 
     @Override
+    public Document doVerify(Document orig) {
+        if (!orig.containsKey(context.getProperty("unique.field"))
+                || !orig.containsKey(context.getProperty("option.field1"))
+                || !orig.containsKey(context.getProperty("filter.field"))) {
+            throw new RuntimeException("lack of necessary field");
+        }
+        return orig;
+    }
+
+    @Override
     public Document doFilter(Document orig) {
         log.info("CNCDataProc::doFilter");
 //        orig.forEach((k, v) -> {
@@ -28,11 +38,6 @@ public class CNCDataProc implements AbstDataProc {
 //            log.info("not contain " + orig.getString(""));
 //        }
 //        System.exit(5);
-        if (!orig.containsKey(context.getProperty("unique.field"))
-                || !orig.containsKey(context.getProperty("option.field1"))
-                || !orig.containsKey(context.getProperty("filter.field"))) {
-            throw new RuntimeException("lack of necessary field");
-        }
         if (orig.getString(context.getProperty("filter.field"))
                 .contains(context.getProperty("filter.value"))) {
             return orig;
@@ -64,20 +69,21 @@ public class CNCDataProc implements AbstDataProc {
     @Override
     public Document generateStorageData(Document orig) {
         log.info("CNCDataProc::generateStorageData");
-        StringBuilder uniqueID = new StringBuilder();
-        uniqueID.append(orig.getString(context.getProperty("unique.field")));
-        uniqueID.append("_");
-        AtomicBoolean isModified = new AtomicBoolean(false);
-        optionValues.forEach((value) -> {
-            if (orig.getString(context.getProperty("option.field1")).contains(value)) {
-                uniqueID.append(value);
-                isModified.set(true);
-            }
-        });
-        if (!isModified.get()) {
-            throw new RuntimeException("cannot match " + context.getProperty("option.field1.value1"));
-        }
-        orig.put("_id", uniqueID.toString());
+//        StringBuilder uniqueID = new StringBuilder();
+//        uniqueID.append(orig.getString(context.getProperty("unique.field")));
+//
+//        uniqueID.append("_");
+//        AtomicBoolean isModified = new AtomicBoolean(false);
+//        optionValues.forEach((value) -> {
+//            if (orig.getString(context.getProperty("option.field1")).contains(value)) {
+//                uniqueID.append(value);
+//                isModified.set(true);
+//            }
+//        });
+//        if (!isModified.get()) {
+//            throw new RuntimeException("cannot match " + context.getProperty("option.field1.value1"));
+//        }
+        orig.put("_id", orig.getString(context.getProperty("unique.field")) + "_" + orig.getString(context.getProperty("option.field1")));
         return orig;
     }
 }
