@@ -1,10 +1,7 @@
 package com.jpro.proc;
 
-import com.jpro.base.JComToo;
-import com.jpro.base.MongoSingle;
+import com.jpro.base.*;
 import com.mongodb.MongoClient;
-import com.mongodb.client.MongoCursor;
-import com.mongodb.client.model.UpdateOptions;
 import lombok.extern.log4j.Log4j2;
 import org.bson.Document;
 
@@ -13,55 +10,46 @@ import java.util.Date;
 import java.util.List;
 import java.util.Properties;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
-import java.util.function.BiConsumer;
 
 import static com.mongodb.client.model.Filters.*;
 
 @Log4j2
 public class AIMDataProcessor implements AbstractDataProcessor {
 
-    private Properties context;
-
     private MongoClient mongo;
 
     public AIMDataProcessor(Properties p) {
-        context = p;
         try {
-            mongo = new MongoClient(context.getProperty("mongo.server.ip"),
-                    Integer.parseInt(context.getProperty("mongo.server.port")));
+            mongo = new MongoClient(p.getProperty("mongo.server.ip"),
+                    Integer.parseInt(p.getProperty("mongo.server.port")));
         } catch (Exception e) {
             log.error("Mongo link failed - " + e);
         }
-        mongoDatabaseName       = context.getProperty("mongo.database");
-        AIMCollection           = context.getProperty("mongo.AIM.collection");
-        AIMNotJoinedCollection  = context.getProperty("mongo.AIM.unjoined.collection");
-        AIMExceptionCollection  = context.getProperty("mongo.AIM.exception.collection");
+        AIMExceptionCollection  = p.getProperty("mongo.AIM.exception.collection");
 
         /// TODO: inner varibles preparations
-        timeIncrement       = JComToo.T().parseTimeDiff(context.getProperty("AIM.time.diff").toLowerCase()) * 60 * 60 * 1000;
-        uniqueIDKey         = context.getProperty("AIM.unique.key");
-        timestampKey        = context.getProperty("AIM.timestamp.key");
-        passKey             = context.getProperty("AIM.pass.key");
-        dataKey             = context.getProperty("AIM.data.key");
-        resultsKey          = context.getProperty("AIM.results.key");
-        measurementsKey     = context.getProperty("AIM.measurements.key");
-        stationKey          = context.getProperty("AIM.station.key");
-        processKey          = context.getProperty("AIM.process.key");
-        processValueToCNC   = context.getProperty("AIM.process.value1");
-        processValueToSPM   = context.getProperty("AIM.process.value2");
+        timeIncrement       = JComToo.T().parseTimeDiff(p.getProperty("AIM.time.diff").toLowerCase()) * 60 * 60 * 1000;
+        timestampKey        = p.getProperty("AIM.timestamp.key");
+        passKey             = p.getProperty("AIM.pass.key");
+        dataKey             = p.getProperty("AIM.data.key");
+        resultsKey          = p.getProperty("AIM.results.key");
+        measurementsKey     = p.getProperty("AIM.measurements.key");
+        stationKey          = p.getProperty("AIM.station.key");
+        processKey          = p.getProperty("AIM.process.key");
+        processValueToCNC   = p.getProperty("AIM.process.value1");
+        processValueToSPM   = p.getProperty("AIM.process.value2");
 
-        time1Key            = context.getProperty("AIM.time1.key");
-        time2Key            = context.getProperty("AIM.time2.key");
-        time3Key            = context.getProperty("AIM.time3.key");
-        spcValueKey         = context.getProperty("AIM.spc.value.key");
-        spcUpperLimitKey    = context.getProperty("AIM.spc.upperlimit.key");
-        spcLowerLimitKey    = context.getProperty("AIM.spc.lowerlimit.key");
-        spcPassKey          = context.getProperty("AIM.spc.pass.key");
+        time1Key            = p.getProperty("AIM.time1.key");
+        time2Key            = p.getProperty("AIM.time2.key");
+        time3Key            = p.getProperty("AIM.time3.key");
+        spcValueKey         = p.getProperty("AIM.spc.value.key");
+        spcUpperLimitKey    = p.getProperty("AIM.spc.upperlimit.key");
+        spcLowerLimitKey    = p.getProperty("AIM.spc.lowerlimit.key");
+        spcPassKey          = p.getProperty("AIM.spc.pass.key");
     }
 
     @Override
     public Document parse(String in) {
-//        log.info("----- AIM -----");
         return Document.parse(in);
     }
 
@@ -69,10 +57,9 @@ public class AIMDataProcessor implements AbstractDataProcessor {
     @Override
     public void trap(String in) {
         Document row = new Document("raw", in);
-        mongo.getDatabase(mongoDatabaseName).getCollection(AIMExceptionCollection).insertOne(row);
+        mongo.getDatabase(GlobalContext.mongoDatabase).getCollection(AIMExceptionCollection).insertOne(row);
     }
 
-    private String uniqueIDKey;
     private String timestampKey;
     private String passKey;
     private String dataKey;
@@ -82,8 +69,28 @@ public class AIMDataProcessor implements AbstractDataProcessor {
     private String measurementsKey;
     @Override
     public void validate(Document in) {
+        long now = System.currentTimeMillis();
+        if (JComToo.statisticOfLastTime == 0) {
+            JComToo.statisticLock.writeLock().lock();
+            JComToo.statisticOfLastTime = now;
+            JComToo.statisticLock.writeLock().unlock();
+        } else {
+            long delta = now - JComToo.statisticOfLastTime;
+            if (delta > 10 * 1000) {
+                JComToo.statisticLock.writeLock().lock();
+                log.info("statistic query  : " + JComToo.statisticOfQuery.longValue() + "\t / " + (delta/1000) + "\t s\t avg : "  + JComToo.statisticOfQuery.longValue()*1000 / delta);
+                log.info("statistic insert : " + JComToo.statisticOfInsert.longValue() + "\t / " + (delta/1000)+ "\t s\t avg : " + JComToo.statisticOfInsert.longValue()*1000 / delta);
+                log.info("statistic delete : " + JComToo.statisticOfDelete.longValue() + "\t / " + (delta/1000) + "\t s\t avg : " + JComToo.statisticOfDelete.longValue()*1000 / delta);
+                JComToo.statisticOfInsert.reset();
+                JComToo.statisticOfQuery.reset();
+                JComToo.statisticOfDelete.reset();
+                JComToo.statisticOfLastTime = now;
+                JComToo.statisticLock.writeLock().unlock();
+            }
+        }
         // TODO: validate minimum requirement
-        if (in.containsKey(uniqueIDKey) && in.get(uniqueIDKey) instanceof String
+        if (in.containsKey(GlobalContext.uniqueIdKeyOfAim)
+                && in.get(GlobalContext.uniqueIdKeyOfAim) instanceof String
                 && in.containsKey(timestampKey)
                 && in.get(timestampKey) instanceof String
                 && in.containsKey(passKey) && in.get(passKey) instanceof Boolean
@@ -118,7 +125,7 @@ public class AIMDataProcessor implements AbstractDataProcessor {
     private String spcPassKey;
     @Override
     public Document transform(Document in) {
-        Document _r = new Document(uniqueIDKey, in.getString(uniqueIDKey))
+        Document _r = new Document(GlobalContext.uniqueIdKeyOfAim, in.getString(GlobalContext.uniqueIdKeyOfAim))
                 .append(timestampKey, in.getString(timestampKey))
                 .append(passKey, in.getBoolean(passKey));
         /// TODO: only process timestamp like "2019-07-12T06:16:00Z"
@@ -166,7 +173,7 @@ public class AIMDataProcessor implements AbstractDataProcessor {
                     }
                 }
             }
-            if (k.equals(uniqueIDKey) || k.equals(timestampKey) || k.equals(passKey)
+            if (k.equals(GlobalContext.uniqueIdKeyOfAim) || k.equals(timestampKey) || k.equals(passKey)
                     || k.equals(time1Key) || k.equals(time2Key) || k.equals(time3Key)) {
                 return;
             }
@@ -186,61 +193,30 @@ public class AIMDataProcessor implements AbstractDataProcessor {
     @Override
     public Document core(Document in) {
         Document _r = null;
-        ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
-        String uniqueIDValue = in.getString(uniqueIDKey);
+        String uniqueIDValue = in.getString(GlobalContext.uniqueIdKeyOfAim);
         String stationValue = in.getString(stationKey);
         String processValue = in.getString(processKey);
-        String id = in.getString(uniqueIDKey) + processValue + stationValue;
-        /// share function
-        BiConsumer<String, Object> f = (k, v) -> {
-            if (in.containsKey(k)) return;
-            lock.writeLock().lock();
-            in.put(k, v);
-            lock.writeLock().unlock();
-        };
         if (processValue.toLowerCase().equals(processValueToCNC.toLowerCase())) {
-            Document SNNData = queryFromSNN(uniqueIDValue);
-            Document CNCData = CNCDataProcessor.getCNCData(uniqueIDValue, mongo);
-//            log.info("----------0 snn: " + uniqueIDValue);
-//            log.info("----------1 snn: " + SNNData.toJson());
+            Document SNNData = MongoProxy.queryFromSn(uniqueIDValue, mongo);
+            Document CNCData = CNCDataProcessor.query(uniqueIDValue, mongo);
             if ((SNNData != null && !SNNData.isEmpty()) && (CNCData != null && !CNCData.isEmpty())) {
-//            log.info("----------2");
-                SNNData.forEach(f);
-                CNCData.forEach(f);
-                storeJoinedData(id, in);
+                JComToo.gatherDocument(in, SNNData);
+                JComToo.gatherDocument(in, CNCData);
+                MongoProxy.upsertToAim(uniqueIDValue, processValue, stationValue, in);
                 _r = in;
             } else if ((SNNData == null || SNNData.isEmpty()) && (CNCData == null || CNCData.isEmpty())) {
-//            log.info("----------3");
                 _r = new Document("AIM", in);
-                storeNotJoinedData(id, _r);
+                MongoProxy.upsertToUnjoined(uniqueIDValue, processValue, stationValue, _r);
             } else if ((SNNData == null || SNNData.isEmpty()) && (CNCData != null && !CNCData.isEmpty())) {
-//            log.info("----------4");
+                log.warn("Rare branch, the possibility of unique ID didn't come is small. - " + in.toJson());
                 _r = new Document("AIM", in).append("CNC", CNCData);
-                storeNotJoinedData(id, _r);
-            } else if ((SNNData != null || !SNNData.isEmpty()) && (CNCData == null || CNCData.isEmpty())) {
-//            log.info("----------5");
+                MongoProxy.upsertToUnjoined(uniqueIDValue, processValue, stationValue, _r);
+            } else if ((SNNData != null && !SNNData.isEmpty()) && (CNCData == null || CNCData.isEmpty())) {
                 _r = new Document("AIM", in).append("SN", SNNData);
-                storeNotJoinedData(id, _r);
+                MongoProxy.upsertToUnjoined(uniqueIDValue, processValue, stationValue, _r);
             }
-//            log.info("----------6");
         } else if (processValue.toLowerCase().equals(processValueToSPM.toLowerCase())) {
-//            Document SNNData = queryFromSNN(uniqueIDValue);
-//            Document SPMData = queryFromSPM(uniqueIDValue);
-//            if ((SNNData != null && !SNNData.isEmpty()) && (SPMData != null && !SPMData.isEmpty())) {
-//                SNNData.forEach(f);
-//                SPMData.forEach(f);
-//                storeJoinedData(id, in);
-//                _r = in;
-//            } else if ((SNNData == null || SNNData.isEmpty()) && (SPMData == null || SPMData.isEmpty())) {
-//                _r = new Document("AIM", in);
-//                storeNotJoinedData(id, _r);
-//            } else if ((SNNData == null || SNNData.isEmpty()) && (SPMData != null && !SPMData.isEmpty())) {
-//                _r = new Document("AIM", in).append("SPM", SPMData);
-//                storeNotJoinedData(id, _r);
-//            } else if ((SNNData != null || !SNNData.isEmpty()) && (SPMData == null || SPMData.isEmpty())) {
-//                _r = new Document("AIM", in).append("SN", SNNData);
-//                storeNotJoinedData(id, _r);
-//            }
+            /// TODO: SPM
         } else {
             log.warn("AIM Join With ??? " + processKey + " : " + processValue);
         }
@@ -253,94 +229,40 @@ public class AIMDataProcessor implements AbstractDataProcessor {
      */
     @Override
     public void post(Document in) {
-//        if (in != null) {
-//            log.info("Joinner - " + this.hashCode() + " - " + in.toJson());
-//        }
+
     }
 
-    public static Document doSecondJoin(Document in) {
+    private static Document doSecondJoin(Document in) {
+        Document row = new Document();
         if (in.containsKey("CNC") && in.containsKey("SN") && in.containsKey("AIM")) {
-            Document row = new Document();
-            Document cnc = in.get("CNC", Document.class);
-            Document snn = in.get("SN" , Document.class);
-            Document aim = in.get("AIM", Document.class);
-            ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
-            BiConsumer<String, Object> f = (k, v) -> {
-                if (row.containsKey(k)) return;
-                lock.writeLock().lock();
-                row.put(k, v);
-                lock.writeLock().unlock();
-            };
-            aim.forEach(f);
-            cnc.forEach(f);
-            snn.forEach(f);
+            JComToo.gatherDocument(row, in.get("AIM", Document.class));
+            JComToo.gatherDocument(row, in.get("CNC", Document.class));
+            JComToo.gatherDocument(row, in.get("SN" , Document.class));
             return row;
         } else if (in.containsKey("SPM") && in.containsKey("SN") && in.containsKey("AIM")) {
-            Document row = new Document();
-            Document spm = in.get("SPM", Document.class);
-            Document snn = in.get("SN" , Document.class);
-            Document aim = in.get("AIM", Document.class);
-            ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
-            BiConsumer<String, Object> f = (k, v) -> {
-                if (row.containsKey(k)) return;
-                lock.writeLock().lock();
-                row.put(k, v);
-                lock.writeLock().unlock();
-            };
-            aim.forEach(f);
-            spm.forEach(f);
-            snn.forEach(f);
+            JComToo.gatherDocument(row, in.get("AIM", Document.class));
+            JComToo.gatherDocument(row, in.get("SPM", Document.class));
+            JComToo.gatherDocument(row, in.get("SN" , Document.class));
             return row;
         }
         return null;
     }
 
-    private Document queryFromSNN(String sn) {
-        MongoCursor<Document> mongoCursor =
-                mongo.getDatabase(mongoDatabaseName)
-                        .getCollection(context.getProperty("mongo.SN.collection"))
-                        .find(eq("_id", sn)).iterator();
-        return mongoCursor.hasNext() ? mongoCursor.next() : null;
-    }
+    public static void processSecondJoin(String uniqueValue, Document unjoined, MongoClient mongoClient) {
+        Document secondJoinData = AIMDataProcessor.doSecondJoin(unjoined);
+        if (secondJoinData != null) {
+            mongoClient.getDatabase(GlobalContext.mongoDatabase).getCollection(GlobalContext.collectionOfUnjoined)
+                    .findOneAndDelete(eq("_id", unjoined.getString("_id")));
+            JComToo.statisticOfDelete.add(1);
 
-    private Document queryFromSPM(String sn) {
-        Document _r = new Document();
+            secondJoinData.put("_id", unjoined.getString("_id"));
 
-        return _r;
-    }
+            GlobalBloom.getFilterForAIM().put(uniqueValue);
 
-    private String mongoDatabaseName;
-    private String AIMCollection;
-    private String AIMNotJoinedCollection;
-    private void storeJoinedData(String id, Document in) {
-        in.put("_id", id);
-        MongoSingle.getInstance().getLock().writeLock().lock();
-        try {
-//            log.info("---- " + in.toJson());
-            MongoSingle.getInstance().getMongoClient()
-                    .getDatabase(mongoDatabaseName).getCollection(AIMCollection)
-                    .replaceOne(eq("_id", id), in, new UpdateOptions().upsert(true));
-        } catch (Exception e) {
-
+            MongoProxy.upsertToAim(secondJoinData);
+        } else {
+            MongoProxy.upsertToUnjoined(unjoined);
         }
-        MongoSingle.getInstance().getLock().writeLock().unlock();
-//        mongo.getDatabase(mongoDatabaseName).getCollection(AIMCollection)
-//                .replaceOne(eq("_id", id), in, new UpdateOptions().upsert(true));
-    }
-    private void storeNotJoinedData(String id, Document in) {
-        in.put("_id", id);
-//        log.info("store unjoined data");
-        MongoSingle.getInstance().getLock().writeLock().lock();
-        try {
-            MongoSingle.getInstance().getMongoClient()
-                    .getDatabase(mongoDatabaseName).getCollection(AIMNotJoinedCollection)
-                    .replaceOne(eq("_id", id), in, new UpdateOptions().upsert(true));
-        } catch (Exception e) {
-
-        }
-        MongoSingle.getInstance().getLock().writeLock().unlock();
-//        mongo.getDatabase(mongoDatabaseName).getCollection(AIMNotJoinedCollection)
-//                .replaceOne(eq("_id", id), in, new UpdateOptions().upsert(true));
     }
 
 }

@@ -2,64 +2,30 @@ package com.jpro.base;
 
 import com.jpro.frame.JoinCube;
 import lombok.extern.log4j.Log4j2;
+import org.bson.Document;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Properties;
+import java.util.concurrent.atomic.LongAdder;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
+import java.util.function.BiConsumer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 @Log4j2
 public class JComToo {
 
+    public static LongAdder statisticOfDelete  = new LongAdder();
+    public static LongAdder statisticOfInsert = new LongAdder();
+    public static LongAdder statisticOfQuery  = new LongAdder();
+    public static ReentrantReadWriteLock statisticLock  = new ReentrantReadWriteLock();
+    public static long statisticOfLastTime = 0;
+
     private static JComToo jComToo;
-
-    public static Properties context;
-
-    private String MongoDatabase;
-    private String CNCCollection;
-    private String CNCProcessKey;
-    private String CNCCellKey;
-    private String CNCMachineKey;
-    private String SNCollection;
-    public String getMongoDatabase() {
-        if (MongoDatabase == null) {
-            MongoDatabase = context.getProperty("mongo.database");
-        }
-        return MongoDatabase;
-    }
-    public String getCNCCollection() {
-        if (CNCCollection == null) {
-            CNCCollection = context.getProperty("mongo.CNC.collection");
-        }
-        return CNCCollection;
-    }
-    public String getCNCProcessKey() {
-        if (CNCProcessKey == null) {
-            CNCProcessKey = context.getProperty("CNC.process.key");
-        }
-        return CNCProcessKey;
-    }
-    public String getCNCCellKey() {
-        if (CNCCellKey == null) {
-            CNCCellKey = context.getProperty("CNC.cell.key");
-        }
-        return CNCCellKey;
-    }
-    public String getCNCMachineKey() {
-        if (CNCMachineKey == null) {
-            CNCMachineKey = context.getProperty("CNC.machine.key");
-        }
-        return CNCMachineKey;
-    }
-    public String getSNCollection() {
-        if (SNCollection == null) {
-            SNCollection = context.getProperty("mongo.SN.collection");
-        }
-        return SNCollection;
-    }
 
     public JComToo() {
         pattern_1 = Pattern.compile(regex_1);
@@ -73,7 +39,6 @@ public class JComToo {
         return jComToo;
     }
 
-
     public static Properties getGlobalContext(String s) {
         Properties prop = new Properties();
         try {
@@ -83,7 +48,23 @@ public class JComToo {
             log.error("Load file failed: " + e);
             System.exit(-1);
         }
-        context = prop;
+        return prop;
+    }
+
+    public static Properties getGlobalContextF(String s) {
+        Properties prop = new Properties();
+        try {
+            File fp = new File(s);
+            if (!fp.exists()) {
+                log.error("no such properties file");
+                System.exit(-1);
+            }
+            FileInputStream inf = new FileInputStream(fp);
+            prop.load(inf);
+        } catch (Exception e) {
+            log.error("Load file failed: " + e);
+            System.exit(-1);
+        }
         return prop;
     }
 
@@ -118,16 +99,50 @@ public class JComToo {
         return timeFormat.parse(s);
     }
 
+    public static void sleep(double t) {
+        try {
+            Thread.sleep((long) (t * 1000));
+        } catch (InterruptedException e) {
+            log.error(e);
+        }
+    }
+
+//    public static long timestampToSecond(String timestamp) throws ParseException {
+//        timestamp = timestamp.toUpperCase();
+//        SimpleDateFormat timeFormat;
+//        if (timestamp.length() == 19 && timestamp.charAt(10) == ' ') {
+//            timeFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+//        } else if (timestamp.length() == 19 && timestamp.charAt(10) == 'T') {
+//            timeFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+//        } else if (timestamp.length() == 20 && timestamp.charAt(10) == 'T' && timestamp.charAt(19) == 'Z') {
+//            timeFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
+//        } else {
+//            throw new ParseException("unknown timestamp format", 0);
+//        }
+//        return timeFormat.parse(timestamp).getTime();
+//    }
+
+    public static void gatherDocument(Document to, Document from) {
+        ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
+        BiConsumer<String, Object> f = (k, v) -> {
+            if (to.containsKey(k)) return;
+            lock.writeLock().lock();
+            to.put(k, v);
+            lock.writeLock().unlock();
+        };
+        from.forEach(f);
+    }
+
     public static void log(String msg) {
         System.out.println("[ TRACE ] " + msg);
     }
     public static void log(String msg, String src) {
         System.out.println("[ TRACE - " + src + " ] " + msg);
     }
-    public static void tlog(String msg) {
-        System.out.println("[ TRACE ] " + msg);
-    }
-    public static void tlog(String msg, String src) {
-        System.out.println("[ TRACE - " + src + " ] " + msg);
-    }
+//    public static void tlog(String msg) {
+//        System.out.println("[ TRACE ] " + msg);
+//    }
+//    public static void tlog(String msg, String src) {
+//        System.out.println("[ TRACE - " + src + " ] " + msg);
+//    }
 }

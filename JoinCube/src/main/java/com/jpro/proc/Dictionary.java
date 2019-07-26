@@ -1,6 +1,6 @@
 package com.jpro.proc;
 
-import com.jpro.base.JComToo;
+import com.jpro.base.GlobalContext;
 import com.mongodb.MongoClient;
 import com.mongodb.client.MongoCursor;
 import lombok.extern.log4j.Log4j2;
@@ -10,7 +10,6 @@ import org.bson.Document;
 
 import java.time.Duration;
 import java.util.*;
-import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
 /**
@@ -20,6 +19,14 @@ import java.util.concurrent.locks.ReentrantLock;
  */
 @Log4j2
 public class Dictionary {
+
+//    private static Dictionary self;
+//    public static Dictionary getInstance() {
+//        if (self == null) {
+//            self = new Dictionary(GlobalContext.context);
+//        }
+//        return self;
+//    }
 
     private static Properties context;
     private Map<String, Map<String, String>> colorDictMap;
@@ -38,13 +45,12 @@ public class Dictionary {
         conProps.put("value.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");
         consumer = new org.apache.kafka.clients.consumer.KafkaConsumer<>(conProps);
         consumer.subscribe(Collections.singleton(pro.getProperty("dictionary.kafka.topic")));
-        kafkaTimeout = Long.parseLong(pro.getProperty("dictionary.kafka.timeout"));
+        kafkaTimeout = Long.parseLong(pro.getProperty("kafka.link.timeout"));
         getMsgThread.start();
     }
 
     private Map<String, Map<String, String>> getData(Properties context) {
         Map<String, Map<String, String>> map = new HashMap<>();
-        JComToo.log("\033[34;1m$$$$\033[0m DICT      -- MongoDB link --");
         try {
 //            try {
             MongoClient mongoClient = new MongoClient(context.getProperty("dictionary.mongo.ip"),
@@ -68,6 +74,7 @@ public class Dictionary {
                 colorDict.put(context.getProperty("SN.wifi_4g.key"), next.getString(context.getProperty("SN.jancode.key")));
                 colorDict.put(context.getProperty("SN.color.key"), next.getString(context.getProperty("SN.upccode.key")));
             }
+            mongoClient.close();
         } finally {
             lock.unlock();
         }
@@ -75,14 +82,17 @@ public class Dictionary {
     }
 
     Thread getMsgThread = new Thread(() -> {
-        while (!Thread.currentThread().isInterrupted()) {
+//        while (!Thread.currentThread().isInterrupted()) {
+        while (GlobalContext.isWorking.get()) {
             ConsumerRecords<String, String> records = consumer.poll(Duration.ofMillis(kafkaTimeout));
             records.forEach(record -> {
-                if ("sn".equalsIgnoreCase(record.value())) {
-                    colorDictMap = getData(context);
-                }
+//                if ("sn".equalsIgnoreCase(record.value())) {
+                colorDictMap = getData(context);
+//                }
             });
         }
+        log.info("Dictionary exit loop!");
+        consumer.close();
     });
 
     public Map<String, String> get(String key) {

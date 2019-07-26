@@ -1,111 +1,119 @@
 package com.jpro.frame;
 
-import com.jpro.base.JComToo;
-import com.jpro.base.KafkaProxy;
+import com.jpro.base.BaseBlock;
+import com.jpro.base.GlobalContext;
+import com.jpro.proc.AIMDataProcessor;
 import com.jpro.proc.AbstractDataProcessor;
 import lombok.extern.log4j.Log4j2;
-import org.apache.kafka.clients.consumer.ConsumerRecord;
-import org.apache.kafka.clients.consumer.ConsumerRecords;
-import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.bson.Document;
 
-import java.time.Duration;
-import java.util.Properties;
+import java.util.concurrent.ArrayBlockingQueue;
 
 @Log4j2
 public class Porter {
 
-    private boolean isWorking = false;
+    private String innerId = "Default";
 
-    /**
-     * The necessary external injection
-     */
-    private Properties context;
+    private ArrayBlockingQueue<BaseBlock> sharedQueue;
 
-    /**
-     * Construct by self
-     */
-    private KafkaConsumer<String, String> consumer;
+//    private boolean isWorking = false;
 
     private AbstractDataProcessor processor;
 
-    Porter(Properties p, AbstractDataProcessor a, KafkaConsumer<String, String> c) {
-        context = p;
-        processor = a;
-        consumer = c;
+    public Porter(ArrayBlockingQueue<BaseBlock> queue) {
+        sharedQueue = queue;
+        processor = new AIMDataProcessor(GlobalContext.context);
     }
 
-    public void stop() {
-        isWorking = false;
+    public Porter(AbstractDataProcessor proc, ArrayBlockingQueue<BaseBlock> queue) {
+        sharedQueue = queue;
+        processor = proc;
     }
 
-    private void prepare() {
-
+    public void setInnerId(String id) {
+        innerId = id;
     }
+
+//    public void close() {
+//        isWorking = false;
+//    }
 
     public void work() {
-        JComToo.log("\033[34;1m$$$$\033[0m Porter Start To Work");
-        isWorking = true;
-        while (isWorking) {
-            // TODO: poll data from Kafka
-            ConsumerRecords<String, String> records = null;
+//        isWorking = true;
+        while (true) {
+            // TODO: obtain data to consume
+            BaseBlock dataToJoin = null;
             try {
-                records = consumer.poll(Duration.ofMillis(Long.parseLong(context.getProperty("kafka.link.timeout"))));
+//                log.error("Push BaseBlock - " + e);
+                if (!GlobalContext.isWorking.get()
+                        && sharedQueue.size() == 0) {
+                    break;
+                }
+                dataToJoin = sharedQueue.take();
+            } catch (InterruptedException e) {
+                log.error(innerId + " Take data from SharedQueue - " + e);
+            }
+            if (dataToJoin == null) continue;
+
+            if (dataToJoin.getHead().equals("exit")) {
+//                log.info(innerId + " Porter received [ exit ] command, exiting ...");
+                break;
+            }
+
+            // TODO: parse json
+            Document origin = null;
+            try {
+                origin = processor.parse(dataToJoin.getBoby());
             } catch (Exception e) {
-                log.error("Kafka poll(Porter) - " + e);
+                log.error("Parse json - " + e);
+                processor.trap(dataToJoin.getBoby());
                 continue;
             }
-            if (records == null || records.count() == 0) continue;
+            if (origin == null) continue;
 
-            for (ConsumerRecord<String, String> record : records) {
-                // TODO: parse json
-                Document origin = null;
-                try {
-                    origin = processor.parse(record.value());
-                } catch (Exception e) {
-                    log.error("Parse json(Porter) - " + e);
-                    processor.trap(record.value());
-                }
-                if (origin == null) continue;
-
-                // TODO: validate orignal data(fields)
-                try {
-                    processor.validate(origin);
-                } catch (Exception e) {
-                    log.error("Validate process(Porter) - " + e);
-                    processor.trap(record.value());
-                    continue;
-                }
-
-                // TODO: filter unnecessary data
-                Document rowOfFilter = null;
-                try {
-                    rowOfFilter = processor.filter(origin);
-                } catch (Exception e) {
-                    log.error("Filter process(Porter) - " + e);
-                    processor.trap(record.value());
-                    continue;
-                }
-                if (rowOfFilter == null || rowOfFilter.isEmpty()) continue;
-
-                // TODO: process data
-                Document rowOfTransform = null;
-                try {
-                    rowOfTransform = processor.transform(rowOfFilter);
-                } catch (Exception e) {
-                    log.error("Transform process(Porter) - " + e);
-                    processor.trap(record.value());
-                    continue;
-                }
-                if (rowOfTransform == null) continue;
-
-                // TODO: core process
-                Document rowOfFinal = processor.core(rowOfTransform);
-
-                // TODO: final process
-                processor.post(rowOfFinal);
+            // TODO: validate original data(fields)
+            try {
+                processor.validate(origin);
+            } catch (Exception e) {
+                log.error("Validate process - " + e);
+                processor.trap(dataToJoin.getBoby());
+                continue;
             }
-        }
-    }
 
+            // TODO: filter unnecessary data
+            Document rowOfFilter = null;
+            try {
+                rowOfFilter = processor.filter(origin);
+            } catch (Exception e) {
+                log.error("Filter process - " + e);
+                processor.trap(dataToJoin.getBoby());
+                continue;
+            }
+            if (rowOfFilter == null || rowOfFilter.isEmpty()) continue;
+
+            // TODO: process data
+            Document rowOfTransform = null;
+            try {
+                rowOfTransform = processor.transform(rowOfFilter);
+            } catch (Exception e) {
+                log.error("Transform process - " + e);
+                processor.trap(dataToJoin.getBoby());
+                continue;
+            }
+            if (rowOfTransform == null) continue;
+
+            // TODO: core process
+            Document rowOfFinal = null;
+            try {
+                rowOfFinal = processor.core(rowOfTransform);
+            } catch (Exception e) {
+                log.error("Core process - " + e);
+            }
+            if (rowOfFinal == null) continue;
+
+            // TODO: final process
+            processor.post(rowOfFinal);
+        }
+        log.info(innerId + " Porter exit loop!");
+    }
 }
