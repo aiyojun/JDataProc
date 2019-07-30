@@ -1,4 +1,4 @@
-package com.jpro.framework
+package com.jpro.processor
 
 trait MonadOps[A] {
 

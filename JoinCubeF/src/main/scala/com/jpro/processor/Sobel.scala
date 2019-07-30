@@ -1,0 +1,16 @@
+package com.jpro.processor
+
+object Sobel {
+  implicit class MapCreator[A](val seq: Seq[A]) extends ImplicitMapper[A]
+
+  trait ImplicitMapper[A] {
+    val seq: Seq[A]
+    def createMap[B, C](f: A => (B, C))(implicit li: Seq[A] = seq): Map[B, C] = {
+      if (li.isEmpty) {
+        Map()
+      } else {
+        createMap(f)(li.drop(1)) + f(li.head)
+      }
+    }
+  }
+}
