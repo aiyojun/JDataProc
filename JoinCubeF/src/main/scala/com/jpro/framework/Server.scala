@@ -2,6 +2,7 @@ package com.jpro.framework
 
 import java.util.concurrent.ArrayBlockingQueue
 
+import com.jpro.processor.SobelOfTravel
 import org.apache.logging.log4j.scala.Logging
 
 case class BaseBlock(head: String, body: String)
@@ -13,7 +14,8 @@ class Server extends Logging {
 
   val kafkaProxyOfTra: KafkaProxy = new KafkaProxy(sharedQueue)
 
-//  val dispatcher: Dispatcher = new Dispatcher()
+  lazy val processorOfTravel  = SobelOfTravel()
+  lazy val dispatcher: Dispatcher = new Dispatcher(sharedQueue, processorOfTravel.proc, processorOfTravel.trap)
 
   def prepare(): Server = {
     kafkaProxyOfTra.prepare(GlobalContext.ctx.getProperty("Travel.group.id"),
@@ -25,6 +27,7 @@ class Server extends Logging {
     logger.info("=================================")
     logger.info("core service start")
     kafkaProxyOfTra.start()
+    dispatcher.start()
   }
 
   def waitThread(): Unit = {

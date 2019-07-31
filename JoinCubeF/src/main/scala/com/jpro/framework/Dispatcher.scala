@@ -3,23 +3,47 @@ package com.jpro.framework
 import java.util.concurrent.ArrayBlockingQueue
 
 import org.apache.logging.log4j.scala.Logging
-import org.json4s.JsonAST.JValue
 import org.json4s._
+import org.json4s.JsonAST.JValue
 import org.json4s.jackson.JsonMethods._
 
 import scala.util._
 
-class Dispatcher(q: ArrayBlockingQueue[BaseBlock], f: JValue => JValue, g: String => Unit, h: JValue => Unit) extends Thread with Logging {
+/**
+  * The core working thread
+  * You should pass processor
+  * of different types to Dispatcher.
+  */
+class Dispatcher(q: ArrayBlockingQueue[BaseBlock],
+                 f: JValue => Unit,
+                 g: String => Unit)
+  extends Thread with Logging {
+
+  /**
+    * One single instance of shared queue
+    * for many consumer to process data in it.
+    */
   val sharedQueue: ArrayBlockingQueue[BaseBlock] = q
 
-  val core: JValue => JValue = f
-  val trap: String => Unit = g
-  val store: JValue => Unit = h
+  /**
+    * core functor to process data
+    */
+  val core: JValue => Unit = f
 
+  /**
+    * store exceptional data
+    */
+  val trap: String => Unit = g
+
+  /**
+    * Dispatcher loop
+    */
   override def run(): Unit = {
-    while (GlobalContext.working || sharedQueue.size() != 0) {
+    while (GlobalContext.working
+      || sharedQueue.size() != 0) {
       Try(sharedQueue.take()) match {
-        case Failure(ex) => logger.error("Take data from SharedQueue - " + ex)
+        case Failure(ex) =>
+          logger.error("Take data from SharedQueue - " + ex)
         case Success(data) =>
           Try(parse(data.body)) match {
             case Failure(parseEx) =>
@@ -30,8 +54,7 @@ class Dispatcher(q: ArrayBlockingQueue[BaseBlock], f: JValue => JValue, g: Strin
                 case Failure(procEx) =>
                   logger.error(procEx)
                   trap(data.body)
-                case Success(njson) =>
-                  store(njson)
+                case Success(_) =>
               }
           }
       }

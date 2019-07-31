@@ -9,7 +9,7 @@ object Sobel {
       if (li.isEmpty) {
         Map()
       } else {
-        createMap(f)(li.drop(1)) + f(li.head)
+        Map(f(li.head)) ++ createMap(f)(li.drop(1))
       }
     }
   }

@@ -1,191 +1,294 @@
 package com.jpro.processor
 
-import com.jpro.framework.{GlobalContext, MongoProxy}
+import com.jpro.framework._
+import com.jpro.framework.GlobalContext._
+import com.jpro.framework.MongoProxy._
 import org.apache.logging.log4j.scala.Logging
 import org.json4s._
 import org.json4s.JsonDSL._
 import org.json4s.jackson.JsonMethods._
-import org.mongodb.scala.{MongoClient, bson}
-import com.jpro.framework.GlobalContext._
-import com.jpro.framework.MongoProxy._
+import org.mongodb.scala._
+import com.mongodb.client.model._
+import org.mongodb.scala.bson.Document
 import org.mongodb.scala.model.Filters.equal
 
-object SobelOfTravel extends Logging {
-  val selfMongo: MongoClient = MongoClient(GlobalContext.MongoURL)
+import scala.util._
 
-  def validate(json: JValue, key: String, seed: Int): Unit = {
-    seed match {
-      case 0 => json \ key match {
-        case JString(_) =>
-        case JNothing   => throw new RuntimeException("no such field - " + key)
-        case _          => throw new RuntimeException("invalid field type - " + key)
-      }
-      case 1 => json \ key match {
-        case JInt(_)    =>
-        case JLong(_)   =>
-        case JString(_) =>
-        case JNothing   => throw new RuntimeException("no such field - " + key)
-        case _          => throw new RuntimeException("invalid field type - " + key)
-      }
-      case 2 => json \ key match {
-        case JInt(_)    =>
-        case JNothing   => throw new RuntimeException("no such field - " + key)
-        case _          => throw new RuntimeException("invalid field type - " + key)
-      }
-      case _ => throw new RuntimeException("undefined seed of validate type")
-    }
-  }
+class SobelOfTravel extends Logging {
+  import SobelOfTravel._
+  private val selfMongo: MongoClient = MongoClient(GlobalContext.MongoURL)
 
-  def process(orig: JValue): JValue = {
-    validate(orig, "WORK_ORDER", 0)
-    validate(orig, "SERIAL_NUMBER", 0)
-    validate(orig, "MODEL_ID", 0)
-    validate(orig, "PROCESS_ID", 1)
-    validate(orig, "OUT_PROCESS_TIME", 0)
-    validate(orig, "RECID", 1)
-    validate(orig, "CURRENT_STATUS", 2)
-    validate(orig, "WORK_FLAG", 2)
-    logger.info("------------------- transform -------------------")
-    val serialNumber      = orig \ "SERIAL_NUMBER" match {case JString(s) => s}
-    val processIdValue    = orig \ "PROCESS_ID" match {case JString(s) => s}
-//    val _id = processIdValue + "_" + serialNumber
-    val processValue      = DictSysProcess(processIdValue)
-    val stationCol        = "st_" + processValue.toLowerCase.replace('-','_')
-    val modelIdValue      = orig \ "MODEL_ID" match {case JString(s) => s}
-    val currentStatusValue = orig \ "CURRENT_STATUS" match {case JString(s) => s}
-    val workFlagValue     = orig \ "WORK_FLAG" match {case JString(s) => s}
-    val recIdValue        = orig \ "RECID" match {case JString(s) => s}
-
-    val defectCol         = "defect_" + processValue.toLowerCase.replace('-','_')
-//    val outProcessTimeValue = orig \ "OUT_PROCESS_TIME" match {
-//      case JString(s) => s
-//    }
+  def trap(s: String): Unit = {
     import com.jpro.util.MongoHelpers._
-    import org.mongodb.scala.model.Filters._
-    val oldRecordSeq = selfMongo.getDatabase(MongoDB).getCollection(stationCol).find(equal("SERIAL_NUMBER", serialNumber)).results()
-    val isUpdateOp = oldRecordSeq.count(_ => true) match {
-      case 0 => false
-      case _ => true
+    Try(Document(s)) match {
+      case Failure(ex) =>
+        selfMongo.getDatabase(MongoDB)
+          .getCollection[Document](stationExceptionalCol)
+          .insertOne(Document("raw" -> s)).results()
+      case Success(js) =>
+        selfMongo.getDatabase(MongoDB)
+          .getCollection[Document](stationExceptionalCol)
+          .insertOne(js).results()
     }
-
-    { /// TODO: G_SN_DEFECT
-      val defectDataSeq = selfMongo.getDatabase(MongoDB)
-        .getCollection(defectCol)
-        .find(equal("RECID", recIdValue))
-        .results()
-      if (defectDataSeq.nonEmpty) {
-        val defectIdValue = defectDataSeq.head.getOrElse("DEFECT_ID", "").asString().getValue
-        val defectReasonSeq = selfMongo.getDatabase(MongoDB).getCollection(GlobalContext.SysDefectCol).find(equal("DEFECT_ID", defectIdValue)).results()
-        if (defectReasonSeq.nonEmpty) {
-          val header = defectReasonSeq.head
-          val oneOfReason: JValue =
-            ("id" -> defectIdValue) ~
-              ("cn" -> header.getOrElse("DEFECT_DESC", "").asString().getValue) ~
-              ("en" -> header.getOrElse("DEFECT_DESC2", "").asString().getValue) ~
-              ("type" -> header.getOrElse("DEFECT_TYPE", "").asString().getValue)
-          /// TODO:
-        }
-      }
-    }
-
-
-    if (isUpdateOp) {
-      val extraAttrOfTime: JValue =
-        ("OUT_PROCESS_TIME" -> orig \ "OUT_PROCESS_TIME") ~
-          ("first_process_time" -> oldRecordSeq.head.getOrElse("first_process_time", "").asString().getValue)
-
-    } else {
-      val extraAttrOfTime: JField = ("first_process_time", orig \ "OUT_PROCESS_TIME")
-
-    }
-
-
-    val extraAttr: JValue =
-      ("PROCESS_NAME" -> DictSysProcess(processIdValue)) ~
-        ("COLOR" -> DictSysPart(modelIdValue).upcode) ~
-        ("WIFI_4G" -> DictSysPart(modelIdValue).jancode) ~
-        ("PRODUCT" -> DictSysPart(modelIdValue).meterialType) ~
-        ("PRODUCT_CODE" -> DictSysPart(modelIdValue).cartonVolume)
-    processIdValue match {
-      case "105399" => // CNC8-WCNC4-QC
-      case "600000100" => // CNC10-WCNC5-QC
-      case "105405" => // FQC
-      case _ =>
-    }
-
-    orig
   }
 
-  def proc(raw: JValue): JValue  = {
-    // TODO: 1. validate
-    validate(raw, "WORK_ORDER", 0)
-    validate(raw, "SERIAL_NUMBER", 0)
-    validate(raw, "MODEL_ID", 0)
-    validate(raw, "PROCESS_ID", 1)
-    validate(raw, "OUT_PROCESS_TIME", 0)
-    validate(raw, "RECID", 1)
-    validate(raw, "CURRENT_STATUS", 2)
-    validate(raw, "WORK_FLAG", 2)
-    // TODO: 2. parse & extract necessary fields
-    val serialNumber      = raw \ "SERIAL_NUMBER" match {case JString(s) => s}
-    val processIdValue    = raw \ "PROCESS_ID" match {case JString(s) => s}
-    val processValue      = DictSysProcess(processIdValue)
-    val stationCol        = "st_" + processValue.toLowerCase.replace('-','_')
-    val modelIdValue      = raw \ "MODEL_ID" match {case JString(s) => s}
-    val currentStatusValue = raw \ "CURRENT_STATUS" match {case JString(s) => s}
-    val workFlagValue     = raw \ "WORK_FLAG" match {case JString(s) => s}
-    val recIdValue        = raw \ "RECID" match {case JString(s) => s}
-    val defectCol         = "defect_" + processValue.toLowerCase.replace('-','_')
+  def proc(raw: JValue): Unit = {
+    // TODO: 1. validate & extract necessary fields
+    import InnerImp._
+    val workOrderValue      = raw | workOrderKey
+    val serialNumber        = raw | serialNumberKey
+    val modelIdValue        = raw | modelIdKey
+    val processIdValue      = raw | processIdKey
+    val outProcessTime      = raw | outProcessTimeKey
+    val recIdValue          = raw | recIdKey
+    val currentStatusValue  = raw | currentStatusKey
+    val workFlagValue       = raw | workFlagKey
+    val processValue        = DictSysProcess(processIdValue)
+    val stationCol          = stationCollectionPrefix + processValue.toLowerCase.replace('-','_')
+    val defectCol           = defectCollectionPrefix + processValue.toLowerCase.replace('-','_')
     // TODO: 3. query history data from mongo
     import com.jpro.util.MongoHelpers._
-    val history: Option[JValue] = selfMongo.getDatabase(MongoDB).getCollection(stationCol).find(equal("SERIAL_NUMBER", serialNumber)).results()
-    // TODO: 4. judge branch
-    // TODO: build inner implement
-    object InnerImp {
-      implicit class Parasyte(val jv: JValue) {
-        def pick: JValue = "SERIAL_NUMBER" -> jv \ "SERIAL_NUMBER"
-        def join(p: JValue): JValue = {
-          jv merge p
+    val history: Option[JValue] =
+      selfMongo.getDatabase(MongoDB)
+        .getCollection[Document](stationCol)
+        .find(equal(serialNumberKey, serialNumber))
+        .headResult() match {
+          case null => None
+          case x => Option(parse(x.toJson()))
         }
-        def mix(p: Option[JValue]): JValue = p match {
-          case None => jv
-          case Some(defect) =>
-            val defectEle: JField = JField("defect", JArray(List(defect)))
 
+    processIdValue match {
+      case GlobalContext.reworkIdOfCnc8 | GlobalContext.reworkIdOfAno | GlobalContext.reworkIdOfFqc  =>
+        history match {
+          case None =>
+          case Some(past) =>
+            val pastee = past.modify
+            Try(
+              selfMongo.getDatabase(MongoDB)
+                .getCollection[Document](stationCollectionPrefix
+                  + DictSysProcess(GlobalContext.ReworkIDMapper(processIdValue))
+                    .toLowerCase()
+                    .replace('-','_'))
+                .replaceOne(
+                  equal(serialNumberKey, serialNumber),
+                  Document(compact(pastee)),
+                  new ReplaceOptions().upsert(true)
+                )
+            ) match {
+              case Failure(ex) => logger.error("store final data failed - " + ex)
+              case Success(_) =>
+            }
         }
-      }
+        return
+      case _ =>
     }
-    history match {
+    // TODO: 4. judge branch
+    import InnerImp._
+    val row = history match {
       case None =>
         val part: JValue =
-          ("PROCESS_NAME" -> DictSysProcess(processIdValue)) ~
-          ("COLOR" -> DictSysPart(modelIdValue).upcode) ~
-          ("WIFI_4G" -> DictSysPart(modelIdValue).jancode) ~
-          ("PRODUCT" -> DictSysPart(modelIdValue).meterialType) ~
-          ("PRODUCT_CODE" -> DictSysPart(modelIdValue).cartonVolume)
-        val defect: Option[JValue] = selfMongo.getDatabase(MongoDB).getCollection(defectCol).find(equal("RECID", recIdValue)).results()
-        import InnerImp._
-        val finner: JValue = raw.pick.join(part).mix(defect)
+          (processNameKey -> DictSysProcess(processIdValue)) ~
+            (colorKey -> DictSysPart(modelIdValue).upcode) ~
+            (wifi4gKey -> DictSysPart(modelIdValue).jancode) ~
+            (productKey -> DictSysPart(modelIdValue).meterialType) ~
+            (productCodeKey -> DictSysPart(modelIdValue).cartonVolume)
+        val defect: Option[JValue] =
+          selfMongo.getDatabase(MongoDB)
+            .getCollection[Document](defectCol)
+            .find(equal(defectRecIdKey, recIdValue))
+            .headResult() match {
+              case null => None
+              case x =>
+                implicit val formats: DefaultFormats.type = org.json4s.DefaultFormats
+                selfMongo.getDatabase(MongoDB)
+                  .getCollection[Document](SysDefectCol)
+                  .find(equal(GlobalContext.defectIdKey, x.getString(defectIdKey)))
+                  .headResult() match {
+                    case null => throw new RuntimeException("cannot find defect type in dict")
+                    case defectDoc =>
+                      val defectDesc = parse(defectDoc.toJson()).extract[DefectType]
+                      val _r =
+                        (travelDefectIdKey -> defectDesc.DEFECT_ID) ~
+                          (travelDefectCnKey -> defectDesc.DEFECT_DESC) ~
+                          (travelDefectEnKey -> defectDesc.DEFECT_DESC2) ~
+                          (travelDefectTypeKey -> defectDesc.DEFECT_TYPE)
+                      Option(_r)
+                  }
+            }
+        val dotc: Option[JValue] = {
+          if (!GlobalContext.DotStationsIDSeq.contains(processIdValue)) {
+            None
+          } else {
+            implicit class Convertor(val m: Map[String, Document]) {
+              def toJValueList(implicit tm: Map[String, Document] = m): List[JValue] = {
+                if (tm.isEmpty)
+                  Nil
+                else
+                  parse(tm.head._2.toJson()) :: toJValueList(tm.drop(1))
+              }
+            }
+            import Sobel._
+            val records = selfMongo.getDatabase(MongoDB)
+              .getCollection(GlobalContext.CncColPrefix + MongoProxy.DictSysProcess(processIdValue).toLowerCase().replace('-', '_'))
+              .find(equal(serialNumberKey, serialNumber)).results()
+              .sortWith((p0, p1) => {p0.getObjectId("_id").getTimestamp > p1.getObjectId("_id").getTimestamp})
+              .createMap[String, Document](record => record.getString(serialNumberKey) -> record).toJValueList
+            Option(JObject(JField("CNC", records)))
+          }
+        }
+        val finner: JValue = raw.pick.join(part).join(dotc).mix(defect)
         finner
       case Some(historyD) =>
-        val defect: Option[JValue] = selfMongo.getDatabase(MongoDB).getCollection(defectCol).find(equal("RECID", recIdValue)).results()
+        val defect: Option[JValue] =
+          selfMongo.getDatabase(MongoDB)
+            .getCollection[Document](defectCol)
+            .find(equal(defectRecIdKey, recIdValue))
+            .headResult() match {
+              case null => None
+              case x =>
+                implicit val formats: DefaultFormats.type = org.json4s.DefaultFormats
+                selfMongo.getDatabase(MongoDB)
+                  .getCollection[Document](SysDefectCol)
+                  .find(equal(GlobalContext.defectIdKey, x.getString(defectIdKey)))
+                  .headResult() match {
+                  case null => throw new RuntimeException("cannot find defect type in dict")
+                  case defectDoc =>
+                    val defectDesc = parse(defectDoc.toJson()).extract[DefectType]
+                    val _r =
+                      (travelDefectIdKey -> defectDesc.DEFECT_ID) ~
+                        (travelDefectCnKey -> defectDesc.DEFECT_DESC) ~
+                        (travelDefectEnKey -> defectDesc.DEFECT_DESC2) ~
+                        (travelDefectTypeKey -> defectDesc.DEFECT_TYPE)
+                    Option(_r)
+                }
+            }
         val finner: JValue = historyD.compare(raw).mix(defect)
         finner
-    }.store
-
-//    if (historySeq.isEmpty) { // insert branch
-//      val part = make
-//      val defect: Option[JValue] = selfMongo.getDatabase(MongoDB).getCollection(defectCol).find(equal("DEFECT_ID", recIdValue)).results()
-//      raw.pick.merge(part).mix(defect)
-//    } else {
-//
-//    }
-    // TODO: 5. kernel processing
-    null
-  }
-
-  def transform(d: JValue): JValue = {
-
-    null
+    }
+    /// TODO: final starage
+    Try(
+      selfMongo.getDatabase(MongoDB)
+        .getCollection[Document](stationCol)
+        .replaceOne(
+          equal(serialNumberKey, serialNumber),
+          Document(compact(row)),
+          new ReplaceOptions().upsert(true)
+        )
+    ) match {
+      case Failure(ex) => logger.error("store final data failed - " + ex)
+      case Success(_) =>
+    }
   }
 }
+
+object SobelOfTravel {
+  import GlobalContext._
+
+  private lazy val serialNumberKey  = ctx.getProperty("Travel.unique.id.key")
+  private lazy val workOrderKey     = ctx.getProperty("Travel.work.order.key")
+  private lazy val modelIdKey       = ctx.getProperty("Travel.model.id.key")
+  private lazy val processIdKey     = ctx.getProperty("Travel.process.id.key")
+  private lazy val currentStatusKey = ctx.getProperty("Travel.current.status.key")
+  private lazy val workFlagKey      = ctx.getProperty("Travel.work.flag.key")
+  private lazy val resultKey        = ctx.getProperty("Travel.result.key")
+  private lazy val recIdKey         = ctx.getProperty("Travel.rec.id.key")
+  private lazy val outProcessTimeKey    = ctx.getProperty("Travel.out.process.time.key")
+  private lazy val firstProcessTimeKey  = ctx.getProperty("Travel.first.process.time.key")
+
+  private lazy val defectIdKey      = ctx.getProperty("Defect.defect.id.key")
+  private lazy val defectRecIdKey   = ctx.getProperty("Defect.rec.id.key")
+
+  private lazy val buildKey         = ctx.getProperty("Travel.build.key")
+  private lazy val siteKey          = ctx.getProperty("Travel.site.key")
+  private lazy val siteValue        = ctx.getProperty("Travel.site.value")
+
+  private lazy val travelDefectIdKey = ctx.getProperty("Travel.defect.id.key")
+  private lazy val travelDefectEnKey = ctx.getProperty("Travel.defect.en.key")
+  private lazy val travelDefectCnKey = ctx.getProperty("Travel.defect.cn.key")
+  private lazy val travelDefectTypeKey = ctx.getProperty("Travel.defect.type.key")
+
+  private lazy val travelJsonDefectKey = ctx.getProperty("Travel.json.defect.key")
+
+  private lazy val processNameKey   = ctx.getProperty("Travel.process.name.key")
+  private lazy val colorKey         = ctx.getProperty("Travel.color.key")
+  private lazy val wifi4gKey        = ctx.getProperty("Travel.wifi.4g.key")
+  private lazy val productKey       = ctx.getProperty("Travel.product.key")
+  private lazy val productCodeKey   = ctx.getProperty("Travel.product.code.key")
+
+  private lazy val resultStatusFail = ctx.getProperty("Travel.result.value.fail")
+  private lazy val resultStatusPass = ctx.getProperty("Travel.result.value.pass")
+  private lazy val resultStatusRework = ctx.getProperty("Travel.result.value.rework")
+  private lazy val resultStatusMiddle = ctx.getProperty("Travel.result.value.middle")
+
+  def apply(): SobelOfTravel = new SobelOfTravel()
+
+  // TODO: build inner implement
+  object InnerImp {
+    implicit class Parasyte(val jv: JValue) {
+
+      def modify: JValue = jv merge JObject(JField(resultKey, resultStatusRework))
+
+      private def makeBuild(s: String): JValue = {
+        buildsMapping.foreach(kv => {
+          if (s.contains(kv._2))
+            return kv._2
+        })
+        throw new RuntimeException(s"cannot find $buildKey in $s")
+      }
+
+      def pick: JValue =
+        (serialNumberKey -> jv \ serialNumberKey) ~
+          (firstProcessTimeKey -> jv \ outProcessTimeKey) ~
+          (outProcessTimeKey -> jv \ outProcessTimeKey) ~
+          (buildKey -> makeBuild(jv | workOrderKey)) ~
+          (siteKey -> siteValue)
+
+      def |(k: String): String = jv \ k match {
+        case JString(x) => x
+        case JNothing   => throw new RuntimeException(s"no such field - $k")
+        case _          => throw new RuntimeException(s"invalid field type - $k")
+      }
+
+      def join(p: JValue): JValue = jv merge p
+
+      def join(p: Option[JValue]): JValue = p match {
+        case None => jv
+        case Some(x) => jv merge x
+      }
+
+      def mix(p: Option[JValue]): JValue = jv \ travelJsonDefectKey match {
+        case JNothing => p match {
+          case None => jv
+          case Some(defect) => JObject(JField(travelJsonDefectKey, JArray(List(defect)))) merge jv
+        }
+        case JArray(arr) => p match {
+          case None => jv
+          case Some(defect) => JObject(JField(travelJsonDefectKey, JArray(arr :+ defect))) merge jv
+        }
+        case _ => jv
+      }
+
+      private def buildResult(p0: JValue, p1: JValue): JValue = {
+        val s0 = p0 match {case JString(s) => s; case _ => throw new RuntimeException("invalid Travel result field")}
+        val s1 = p1 match {case JString(s) => s; case _ => throw new RuntimeException("invalid Travel result field")}
+        if (s0 == resultStatusMiddle && s1 == resultStatusPass) {
+          JString(resultStatusRework)
+        } else if (s0 == resultStatusMiddle && s1 == resultStatusFail) {
+          JString(resultStatusMiddle)
+        } else {
+          JString(s1)
+        }
+      }
+
+      def compare(p: JValue): JValue = {
+        val jn: JValue =
+          (outProcessTimeKey -> p \ outProcessTimeKey) ~
+            (resultKey -> buildResult(jv \ resultKey, p \ resultKey))
+        jv merge jn
+      }
+
+    }
+  }
+}
+
+sealed case class DefectType(DEFECT_ID: String, DEFECT_DESC: String, DEFECT_DESC2: String, DEFECT_TYPE: String)

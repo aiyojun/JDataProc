@@ -2,11 +2,14 @@ package com.jpro
 
 import java.util.concurrent.TimeUnit
 
+import com.jpro.framework.GlobalContext.MongoDB
 import com.jpro.framework.MongoProxy.logger
 import com.jpro.framework.{BasicAttr, GlobalContext, JTools, Server}
+import com.jpro.processor.SobelOfTravel.serialNumberKey
 import com.jpro.resource.MagicBox
 import org.apache.logging.log4j.scala.Logging
 import org.json4s.JsonAST.JValue
+import org.mongodb.scala.model.Filters.equal
 import org.mongodb.scala.{Document, MongoClient}
 import sun.misc.Signal
 
@@ -46,28 +49,74 @@ object Federation extends Logging {
   import org.json4s._
   import org.json4s.jackson.JsonMethods._
   def test(): Unit = {
-    import org.mongodb.scala.model.Filters._
-    import scala.concurrent.Await
-    import scala.concurrent._
-    import scala.concurrent.ExecutionContext.Implicits.global
-//    import com.jpro.util.MongoHelpers._
-//    import com.jpro.processor.Sobel._
-////    val observable =
-//    def f: Document => (String, BasicAttr) = {
-//      doc => doc.getOrElse("PART_ID","").asString().getValue ->
-//        BasicAttr(
-//          doc.getOrElse("CARTON_VOLUME", "").asString().getValue,
-//          doc.getOrElse("METERIAL_TYPE", "").asString().getValue,
-//          doc.getOrElse("JANCODE", "").asString().getValue,
-//          doc.getOrElse("UPCODE", "").asString().getValue
-//        )
+//    val x = 11
+//    def tt(y: Int): Unit = y match {
+//      case 1 | 2 => println("------111111")
+//      case _ => println("----case _____")
 //    }
-//    MongoClient("mongodb://172.16.1.244:27017")
+//    tt(1)
+//    println("++++")
+//    tt(2)
+//    println("++++")
+//    tt(3)
+    import org.mongodb.scala._
+    implicit class Convertor(val m: Map[String, Document]) {
+      def toJValueList(implicit tm: Map[String, Document] = m): List[JValue] = {
+        if (tm.isEmpty)
+          Nil
+        else
+          parse(tm.head._2.toJson()) :: toJValueList(tm.drop(1))
+      }
+    }
+
+    import com.jpro.processor.Sobel._
+    import com.jpro.util.MongoHelpers._
+    val records = MongoClient("mongodb://172.16.1.244:27017").getDatabase("wonder")
+      .getCollection("cnc").find(equal("sn", "123"))
+      .results().sortWith((p0, p1) => {p0.getObjectId("_id").getTimestamp < p1.getObjectId("_id").getTimestamp})
+      .createMap[String, Document](record => record.getString("sn") -> record).toJValueList()
+      .foreach(println)
+//      .createMap[String, Document](record => record.getString(serialNumberKey) -> record)
+
+//    val li = List("c_1", "a_12", "a_1", "b_2", "a_3")
+//    li.createMap(s => s.split('_').head -> s.split('_').last).foreach(println)
+//    import org.mongodb.scala.model.Filters._
+//    import scala.concurrent.Await
+//    import scala.concurrent._
+//    import scala.concurrent.ExecutionContext.Implicits.global
+////    import com.jpro.util.MongoHelpers._
+////    import com.jpro.processor.Sobel._
+//////    val observable =
+////    def f: Document => (String, BasicAttr) = {
+////      doc => doc.getOrElse("PART_ID","").asString().getValue ->
+////        BasicAttr(
+////          doc.getOrElse("CARTON_VOLUME", "").asString().getValue,
+////          doc.getOrElse("METERIAL_TYPE", "").asString().getValue,
+////          doc.getOrElse("JANCODE", "").asString().getValue,
+////          doc.getOrElse("UPCODE", "").asString().getValue
+////        )
+////    }
+//    import com.jpro.util.MongoHelpers._
+//    val res = MongoClient("mongodb://172.16.1.244:27017")
 //      .getDatabase("wonder")
 ////      .getCollection("sys_part")
-//      .getCollection("sys_process")
-//      .find()
-////      .find(equal("PART_ID", "1000004973"))
+//      .getCollection("sys_part")
+////      .find()
+//      .find(equal("PART_ID", "1000004973"))
+//      .headResult()
+//    if (res == null) {
+//      println("null")
+//    } else {
+////      case class TravData(PART_ID: String, VERSION: String)
+////      import org.json4s._
+////      import org.json4s.jackson.JsonMethods._
+////      implicit val formats: DefaultFormats.type = org.json4s.DefaultFormats
+////      println(parse(res.toJson()).extract[TravData])
+//      println(parse(res.toJson()) \ "PART_ID" match {
+//        case JString(s) => s
+//        case _ => "type error"
+//      })
+//    }
 //      .results().createMap[String, String](
 //      doc => doc.getOrElse("process_name", "").asString().getValue.toLowerCase() -> doc.getOrElse("process_id", "").asString().getValue
 //    ).foreach(kv => println(s"${kv._1} \t ${kv._2}"))
@@ -115,6 +164,7 @@ object Federation extends Logging {
 //      }
 //    }
 //    println("::: " + "J320-Housing".toJ320OrJ420)
-    println("station_" +"2D-BC-QC".toLowerCase.replace('-','_'))
+//    println("station_" +"2D-BC-QC".toLowerCase.replace('-','_'))
+
   }
 }
