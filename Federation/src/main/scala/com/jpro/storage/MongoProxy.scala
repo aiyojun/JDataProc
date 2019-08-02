@@ -41,8 +41,14 @@ object MongoProxy extends Logging {
 
   lazy val DictSysProcess: Map[String, String] = {
     uniqueMongo.getDatabase(MongoDB).getCollection(syse.processTable).find()
-      .results().createMap[String, String](
-        doc => doc.getString(syse.skProcessID) -> doc.getString(syse.skProcessName)
-      )
+      .results() match {
+      case Nil | null =>
+        logger.warn(s"no process in ${syse.processTable}")
+        null
+      case seq =>
+        seq.createMap[String, String](
+          doc => doc.getString(syse.skProcessID) -> doc.getString(syse.skProcessName)
+        )
+    }
   }
 }

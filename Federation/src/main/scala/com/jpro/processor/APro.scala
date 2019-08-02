@@ -182,7 +182,160 @@ class APro extends Logging with Pro {
   }
 }
 
-object APro {
+object APro extends Logging {
+  def process(raw: JValue): Unit = {
+    val selfMongo = MongoClient(s"mongodb://$MongoURL")
+    // TODO: 1. validate & extract necessary fields
+    import InnerImp._
+    val workOrderValue      = raw | trae.ikCompose
+    val serialNumber        = raw | trae.ikUniqueID
+    val modelIdValue        = raw | trae.ikExtraID
+    val processIdValue      = raw | trae.ikStationID
+    val outProcessTime      = raw | trae.ikOutTime
+    val recIdValue          = raw | trae.ikFailID
+    val currentStatusValue  = raw | trae.ikStateOne
+    val workFlagValue       = raw | trae.ikStateTwo
+    val processValue        = DictSysProcess(processIdValue)
+    val stationCol          = trae.stationTablePrefix + processValue.toLowerCase.replace('-','_')
+    // TODO: 3. query history data from mongo
+    import com.jpro.storage.MongoHelpers._
+    val history: Option[JValue] =
+      selfMongo.getDatabase(MongoDB)
+        .getCollection[Document](stationCol)
+        .find(equal(trae.ikUniqueID, serialNumber))
+        .headResult() match {
+        case null => None
+        case x => Option(parse(x.toJson()))
+      }
+
+    processIdValue match {
+      case trae.reworkStationIDOfCnc8 | trae.reworkStationIDOfAno | trae.reworkStationIDOfFqc  =>
+        history match {
+          case None =>
+          case Some(past) =>
+            val pastee = past.modify
+            Try(
+              selfMongo.getDatabase(MongoDB)
+                .getCollection[Document](trae.stationTablePrefix
+                + DictSysProcess(trae.ReworkIDMapper(processIdValue))
+                .toLowerCase()
+                .replace('-','_'))
+                .replaceOne(
+                  equal(trae.ikUniqueID, serialNumber),
+                  Document(compact(pastee)),
+                  new ReplaceOptions().upsert(true)
+                )
+            ) match {
+              case Failure(ex) => logger.error("store final data failed - " + ex)
+              case Success(_) =>
+            }
+        }
+        return
+      case _ =>
+    }
+    // TODO: 4. judge branch
+    import InnerImp._
+    val row = history match {
+      case None =>
+        val part: JValue =
+          (trae.okGenStation -> DictSysProcess(processIdValue)) ~
+            (trae.okGenColor -> DictSysPart(modelIdValue).upcode) ~
+            (trae.okGenMedia -> DictSysPart(modelIdValue).jancode) ~
+            (trae.okGenProduct -> DictSysPart(modelIdValue).cartonVolume) ~
+            (trae.okGenProductID -> DictSysPart(modelIdValue).meterialType)
+        val defect: Option[JValue] =
+          selfMongo.getDatabase(MongoDB)
+            .getCollection[Document](com.jpro.resource.defe.defectTable)
+            .find(equal(defe.ikFailID, recIdValue))
+            .headResult() match {
+              case null => None
+              case x =>
+                implicit val formats: DefaultFormats.type = org.json4s.DefaultFormats
+                selfMongo.getDatabase(MongoDB)
+                  .getCollection[Document](syse.defectTable)
+                  .find(equal(syse.skDefectID, x.getString(syse.skDefectID)))
+                  .headResult() match {
+                  case null => throw new RuntimeException("cannot find defect type in dict")
+                  case defectDoc =>
+                    val defectDesc = parse(defectDoc.toJson()).extract[DefectType]
+                    val _r =
+                      (defe.okDefectID -> defectDesc.DEFECT_ID) ~
+                        (defe.okDefectCn -> defectDesc.DEFECT_DESC) ~
+                        (defe.okDefectEn -> defectDesc.DEFECT_DESC2) ~
+                        (defe.okDefectType -> defectDesc.DEFECT_TYPE)
+                    Option(_r)
+                }
+            }
+        val dotc: Option[JValue] = {
+          if (!trae.DotStationsIDSeq.contains(processIdValue)) {
+            None
+          } else {
+            implicit class Convertor(val m: Map[String, Document]) {
+              def toJValueList(implicit tm: Map[String, Document] = m): List[JValue] = {
+                if (tm.isEmpty)
+                  Nil
+                else
+                  parse(tm.head._2.toJson()) :: toJValueList(tm.drop(1))
+              }
+            }
+            import com.jpro.util.Sobel._
+            val records = selfMongo.getDatabase(MongoDB)
+              .getCollection(dote.dotTable)
+              .find(equal(dote.ikUniqueID, serialNumber)).results()
+              .sortWith((p0, p1) => {p0.getObjectId("_id").getTimestamp > p1.getObjectId("_id").getTimestamp})
+              .createMap[String, Document](record => record.getString(dote.ikUniqueID) -> record).toJValueList
+            Option(JObject(JField("CNC", records)))
+          }
+        }
+        val finner: JValue = raw.pick.join(part).join(dotc).mix(defect)
+        finner merge JObject(JField("mapping",
+          (finner | trae.okGenAuto) + (finner | trae.okGenProduct) + (finner | trae.okGenCompose) + (finner | trae.okGenColor) + (finner | trae.okGenMedia)))
+      case Some(historyD) =>
+        val defect: Option[JValue] =
+          selfMongo.getDatabase(MongoDB)
+            .getCollection[Document](defe.defectTable)
+            .find(equal(defe.ikFailID, recIdValue))
+            .headResult() match {
+            case null => None
+            case x =>
+              implicit val formats: DefaultFormats.type = org.json4s.DefaultFormats
+              selfMongo.getDatabase(MongoDB)
+                .getCollection[Document](syse.defectTable)
+                .find(equal(syse.skDefectID, x.getString(syse.skDefectID)))
+                .headResult() match {
+                case null => throw new RuntimeException("cannot find defect type in dict")
+                case defectDoc =>
+                  val defectDesc = parse(defectDoc.toJson()).extract[DefectType]
+                  val _r =
+                    (defe.okDefectID -> defectDesc.DEFECT_ID) ~
+                      (defe.okDefectCn -> defectDesc.DEFECT_DESC) ~
+                      (defe.okDefectEn -> defectDesc.DEFECT_DESC2) ~
+                      (defe.okDefectType -> defectDesc.DEFECT_TYPE)
+                  Option(_r)
+              }
+          }
+        val finner: JValue = historyD.compare(raw).mix(defect)
+        finner
+    }
+    /// TODO: final starage
+    Try(
+      selfMongo.getDatabase(MongoDB)
+        .getCollection[Document](stationCol)
+        .replaceOne(
+          equal(trae.ikUniqueID, serialNumber),
+          Document(compact(row)),
+          new ReplaceOptions().upsert(true)
+        ).results()
+    ) match {
+      case Failure(ex) => logger.error("store final data failed - " + ex)
+      case Success(_) =>
+    }
+  }
+
+  def trap(s: String): Unit = {
+
+  }
+
   private lazy val travelJsonDefectKey = trae.okGenDefectKey
 
   def apply(): APro = new APro()
@@ -201,12 +354,31 @@ object APro {
         throw new RuntimeException(s"cannot find ${trae.okGenCompose} in $s")
       }
 
+      private def makeResult(s1: String, s2: String): String = {
+        if (s1 == "1") {
+          if (s2 == "1") {
+            return "scrapped"
+          } else if (s2 == "0") {
+            return "fail"
+          }
+        } else if (s1 == "0") {
+          if (s2 == "1") {
+            throw new RuntimeException("invalid Travel data - create result field failed")
+          } else if (s2 == "0") {
+            return "pass"
+          }
+        }
+        throw new RuntimeException("invalid Travel data - create result field failed")
+      }
+
       def pick: JValue =
         (trae.ikUniqueID -> jv \ trae.ikUniqueID) ~
           (trae.okGenrstTime -> jv \ trae.ikOutTime) ~
           (trae.ikOutTime -> jv \ trae.ikOutTime) ~
           (trae.okGenCompose -> makeBuild(jv | trae.ikCompose)) ~
-          (trae.okGenAuto -> trae.ovGenAuto)
+          (trae.okGenAuto -> trae.ovGenAuto) ~
+          (trae.okGenAuto2 -> "") ~
+          (trae.okGenState -> makeResult(jv | trae.ikStateOne, jv | trae.ikStateTwo))
 
       def |(k: String): String = jv \ k match {
         case JString(x) => x

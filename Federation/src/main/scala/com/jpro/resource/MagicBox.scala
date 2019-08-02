@@ -7,11 +7,13 @@ object MagicBox extends Logging {
   def initializeResource(args: Array[String]): Unit = {
     logger.info("\033[36;1minitialize resource\033[0m")
 
-    Context.load("/root/Desktop/JoinCubeF/src/main/resources/library.properties")
+    Context.load("/opt/daijun/Federation/src/main/resources/library.properties")
     logger.info("Context information as following:")
     Context.props.forEach((k, v) => logger.info(s"    $k: $v"))
     logger.info("All station name:")
-    MongoProxy.DictSysProcess.foreach(kv => logger.info(s"    ${kv._2}"))
+    MongoProxy.DictSysProcess.foreach(kv => logger.info(s"    ${kv._1} \t- ${kv._2}"))
+    logger.info("Dictionary info:")
+    MongoProxy.DictSysPart.foreach(kv => logger.info(s"    ${kv._1} \t- ${kv._2}"))
   }
 
   def recycleResource(): Unit = {

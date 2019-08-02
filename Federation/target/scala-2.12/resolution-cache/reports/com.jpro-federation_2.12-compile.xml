@@ -1,0 +1,333 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet type="text/xsl" href="ivy-report.xsl"?>
+<ivy-report version="1.0">
+	<info
+		organisation="com.jpro"
+		module="federation_2.12"
+		revision="0.1"
+		conf="compile"
+		confs="compile, runtime, test, provided, optional, compile-internal, runtime-internal, test-internal, plugin, pom, scala-tool"
+		date="20190801132633"/>
+	<dependencies>
+		<module organisation="org.mongodb.scala" name="mongo-scala-driver_2.12">
+			<revision name="2.6.0" status="release" pubdate="20190206224956" resolver="sbt-chain" artresolver="sbt-chain" homepage="http://mongodb.github.io/mongo-scala-driver" downloaded="false" searched="false" default="false" conf="default, compile, runtime, default(compile), master" position="20">
+				<license name="Apache 2" url="http://www.apache.org/licenses/LICENSE-2.0.html"/>
+				<metadata-artifact status="no" details="" size="3898" time="0" location="/root/.ivy2/cache/org.mongodb.scala/mongo-scala-driver_2.12/ivy-2.6.0.xml" searched="false" origin-is-local="false" origin-location="https://repo1.maven.org/maven2/org/mongodb/scala/mongo-scala-driver_2.12/2.6.0/mongo-scala-driver_2.12-2.6.0.pom"/>
+				<caller organisation="com.jpro" name="federation_2.12" conf="compile" rev="2.6.0" rev-constraint-default="2.6.0" rev-constraint-dynamic="2.6.0" callerrev="0.1"/>
+				<artifacts>
+					<artifact name="mongo-scala-driver_2.12" type="jar" ext="jar" status="no" details="" size="446079" time="0" location="/root/.ivy2/cache/org.mongodb.scala/mongo-scala-driver_2.12/jars/mongo-scala-driver_2.12-2.6.0.jar">
+						<origin-location is-local="false" location="https://repo1.maven.org/maven2/org/mongodb/scala/mongo-scala-driver_2.12/2.6.0/mongo-scala-driver_2.12-2.6.0.jar"/>
+					</artifact>
+				</artifacts>
+			</revision>
+		</module>
+		<module organisation="org.mongodb.scala" name="mongo-scala-bson_2.12">
+			<revision name="2.6.0" status="release" pubdate="20190206224927" resolver="sbt-chain" artresolver="sbt-chain" homepage="http://mongodb.github.io/mongo-scala-driver" downloaded="false" searched="false" default="false" conf="compile, runtime(*), master(compile), runtime, compile(*), master" position="21">
+				<license name="Apache 2" url="http://www.apache.org/licenses/LICENSE-2.0.html"/>
+				<metadata-artifact status="no" details="" size="3735" time="0" location="/root/.ivy2/cache/org.mongodb.scala/mongo-scala-bson_2.12/ivy-2.6.0.xml" searched="false" origin-is-local="false" origin-location="https://repo1.maven.org/maven2/org/mongodb/scala/mongo-scala-bson_2.12/2.6.0/mongo-scala-bson_2.12-2.6.0.pom"/>
+				<caller organisation="org.mongodb.scala" name="mongo-scala-driver_2.12" conf="default, compile, runtime, master" rev="2.6.0" rev-constraint-default="2.6.0" rev-constraint-dynamic="2.6.0" callerrev="2.6.0"/>
+				<artifacts>
+					<artifact name="mongo-scala-bson_2.12" type="jar" ext="jar" status="no" details="" size="213118" time="0" location="/root/.ivy2/cache/org.mongodb.scala/mongo-scala-bson_2.12/jars/mongo-scala-bson_2.12-2.6.0.jar">
+						<origin-location is-local="false" location="https://repo1.maven.org/maven2/org/mongodb/scala/mongo-scala-bson_2.12/2.6.0/mongo-scala-bson_2.12-2.6.0.jar"/>
+					</artifact>
+				</artifacts>
+			</revision>
+		</module>
+		<module organisation="org.mongodb" name="mongodb-driver-async">
+			<revision name="3.10.0" status="release" pubdate="20190205211512" resolver="sbt-chain" artresolver="sbt-chain" homepage="http://www.mongodb.org" downloaded="false" searched="false" default="false" conf="compile, runtime(*), master(compile), runtime, compile(*), master" position="22">
+				<license name="The Apache License, Version 2.0" url="http://www.apache.org/licenses/LICENSE-2.0.txt"/>
+				<metadata-artifact status="no" details="" size="2953" time="0" location="/root/.ivy2/cache/org.mongodb/mongodb-driver-async/ivy-3.10.0.xml" searched="false" origin-is-local="false" origin-location="https://repo1.maven.org/maven2/org/mongodb/mongodb-driver-async/3.10.0/mongodb-driver-async-3.10.0.pom"/>
+				<caller organisation="org.mongodb.scala" name="mongo-scala-driver_2.12" conf="default, compile, runtime, master" rev="3.10.0" rev-constraint-default="3.10.0" rev-constraint-dynamic="3.10.0" callerrev="2.6.0"/>
+				<caller organisation="org.mongodb.scala" name="mongo-scala-bson_2.12" conf="compile, runtime" rev="3.10.0" rev-constraint-default="3.10.0" rev-constraint-dynamic="3.10.0" callerrev="2.6.0"/>
+				<artifacts>
+					<artifact name="mongodb-driver-async" type="jar" ext="jar" status="no" details="" size="218876" time="0" location="/root/.ivy2/cache/org.mongodb/mongodb-driver-async/jars/mongodb-driver-async-3.10.0.jar">
+						<origin-location is-local="false" location="https://repo1.maven.org/maven2/org/mongodb/mongodb-driver-async/3.10.0/mongodb-driver-async-3.10.0.jar"/>
+					</artifact>
+				</artifacts>
+			</revision>
+		</module>
+		<module organisation="org.mongodb" name="mongodb-driver-core">
+			<revision name="3.10.0" status="release" pubdate="20190205211530" resolver="sbt-chain" artresolver="sbt-chain" homepage="http://www.mongodb.org" downloaded="false" searched="false" default="false" conf="compile, runtime(*), master(compile), runtime, compile(*), master" position="24">
+				<license name="The Apache License, Version 2.0" url="http://www.apache.org/licenses/LICENSE-2.0.txt"/>
+				<metadata-artifact status="no" details="" size="3534" time="0" location="/root/.ivy2/cache/org.mongodb/mongodb-driver-core/ivy-3.10.0.xml" searched="false" origin-is-local="false" origin-location="https://repo1.maven.org/maven2/org/mongodb/mongodb-driver-core/3.10.0/mongodb-driver-core-3.10.0.pom"/>
+				<caller organisation="org.mongodb" name="mongodb-driver-async" conf="compile, runtime" rev="3.10.0" rev-constraint-default="3.10.0" rev-constraint-dynamic="3.10.0" callerrev="3.10.0"/>
+				<artifacts>
+					<artifact name="mongodb-driver-core" type="jar" ext="jar" status="no" details="" size="1368986" time="0" location="/root/.ivy2/cache/org.mongodb/mongodb-driver-core/jars/mongodb-driver-core-3.10.0.jar">
+						<origin-location is-local="false" location="https://repo1.maven.org/maven2/org/mongodb/mongodb-driver-core/3.10.0/mongodb-driver-core-3.10.0.jar"/>
+					</artifact>
+				</artifacts>
+			</revision>
+		</module>
+		<module organisation="org.mongodb" name="bson">
+			<revision name="3.10.0" status="release" pubdate="20190205211433" resolver="sbt-chain" artresolver="sbt-chain" homepage="https://bsonspec.org" downloaded="false" searched="false" default="false" conf="compile, runtime(*), master(compile), runtime, compile(*), master" position="23">
+				<license name="The Apache License, Version 2.0" url="http://www.apache.org/licenses/LICENSE-2.0.txt"/>
+				<metadata-artifact status="no" details="" size="2618" time="0" location="/root/.ivy2/cache/org.mongodb/bson/ivy-3.10.0.xml" searched="false" origin-is-local="false" origin-location="https://repo1.maven.org/maven2/org/mongodb/bson/3.10.0/bson-3.10.0.pom"/>
+				<caller organisation="org.mongodb" name="mongodb-driver-async" conf="compile, runtime" rev="3.10.0" rev-constraint-default="3.10.0" rev-constraint-dynamic="3.10.0" callerrev="3.10.0"/>
+				<caller organisation="org.mongodb" name="mongodb-driver-core" conf="compile, runtime" rev="3.10.0" rev-constraint-default="3.10.0" rev-constraint-dynamic="3.10.0" callerrev="3.10.0"/>
+				<artifacts>
+					<artifact name="bson" type="jar" ext="jar" status="no" details="" size="488857" time="0" location="/root/.ivy2/cache/org.mongodb/bson/jars/bson-3.10.0.jar">
+						<origin-location is-local="false" location="https://repo1.maven.org/maven2/org/mongodb/bson/3.10.0/bson-3.10.0.jar"/>
+					</artifact>
+				</artifacts>
+			</revision>
+		</module>
+		<module organisation="org.apache.kafka" name="kafka-clients">
+			<revision name="2.2.1" status="release" pubdate="20190514011218" resolver="sbt-chain" artresolver="sbt-chain" homepage="http://kafka.apache.org" downloaded="false" searched="false" default="false" conf="default, compile, runtime, default(compile), master" position="16">
+				<license name="The Apache Software License, Version 2.0" url="http://www.apache.org/licenses/LICENSE-2.0.txt"/>
+				<metadata-artifact status="no" details="" size="3997" time="0" location="/root/.ivy2/cache/org.apache.kafka/kafka-clients/ivy-2.2.1.xml" searched="false" origin-is-local="false" origin-location="https://repo1.maven.org/maven2/org/apache/kafka/kafka-clients/2.2.1/kafka-clients-2.2.1.pom"/>
+				<caller organisation="com.jpro" name="federation_2.12" conf="compile" rev="2.2.1" rev-constraint-default="2.2.1" rev-constraint-dynamic="2.2.1" callerrev="0.1"/>
+				<artifacts>
+					<artifact name="kafka-clients" type="jar" ext="jar" status="no" details="" size="2665933" time="0" location="/root/.ivy2/cache/org.apache.kafka/kafka-clients/jars/kafka-clients-2.2.1.jar">
+						<origin-location is-local="false" location="https://repo1.maven.org/maven2/org/apache/kafka/kafka-clients/2.2.1/kafka-clients-2.2.1.jar"/>
+					</artifact>
+				</artifacts>
+			</revision>
+		</module>
+		<module organisation="org.xerial.snappy" name="snappy-java">
+			<revision name="1.1.7.2" status="release" pubdate="20180522021930" resolver="sbt-chain" artresolver="sbt-chain" homepage="https://github.com/xerial/snappy-java" downloaded="false" searched="false" default="false" conf="compile, runtime(*), master(compile), runtime, compile(*), master" position="19">
+				<license name="The Apache Software License, Version 2.0" url="http://www.apache.org/licenses/LICENSE-2.0.txt"/>
+				<metadata-artifact status="no" details="" size="3941" time="0" location="/root/.ivy2/cache/org.xerial.snappy/snappy-java/ivy-1.1.7.2.xml" searched="false" origin-is-local="false" origin-location="https://repo1.maven.org/maven2/org/xerial/snappy/snappy-java/1.1.7.2/snappy-java-1.1.7.2.pom"/>
+				<caller organisation="org.apache.kafka" name="kafka-clients" conf="default, compile, runtime, master" rev="1.1.7.2" rev-constraint-default="1.1.7.2" rev-constraint-dynamic="1.1.7.2" callerrev="2.2.1"/>
+				<artifacts>
+					<artifact name="snappy-java" type="bundle" ext="jar" status="no" details="" size="2018686" time="0" location="/root/.ivy2/cache/org.xerial.snappy/snappy-java/bundles/snappy-java-1.1.7.2.jar">
+						<origin-location is-local="false" location="https://repo1.maven.org/maven2/org/xerial/snappy/snappy-java/1.1.7.2/snappy-java-1.1.7.2.jar"/>
+					</artifact>
+				</artifacts>
+			</revision>
+		</module>
+		<module organisation="org.lz4" name="lz4-java">
+			<revision name="1.5.0" status="release" pubdate="20180926012742" resolver="sbt-chain" artresolver="sbt-chain" homepage="https://github.com/lz4/lz4-java" downloaded="false" searched="false" default="false" conf="compile, runtime(*), master(compile), runtime, compile(*), master" position="18">
+				<license name="The Apache Software License, Version 2.0" url="http://www.apache.org/licenses/LICENSE-2.0.txt"/>
+				<metadata-artifact status="no" details="" size="2736" time="0" location="/root/.ivy2/cache/org.lz4/lz4-java/ivy-1.5.0.xml" searched="false" origin-is-local="false" origin-location="https://repo1.maven.org/maven2/org/lz4/lz4-java/1.5.0/lz4-java-1.5.0.pom"/>
+				<caller organisation="org.apache.kafka" name="kafka-clients" conf="default, compile, runtime, master" rev="1.5.0" rev-constraint-default="1.5.0" rev-constraint-dynamic="1.5.0" callerrev="2.2.1"/>
+				<artifacts>
+					<artifact name="lz4-java" type="jar" ext="jar" status="no" details="" size="511547" time="0" location="/root/.ivy2/cache/org.lz4/lz4-java/jars/lz4-java-1.5.0.jar">
+						<origin-location is-local="false" location="https://repo1.maven.org/maven2/org/lz4/lz4-java/1.5.0/lz4-java-1.5.0.jar"/>
+					</artifact>
+				</artifacts>
+			</revision>
+		</module>
+		<module organisation="com.github.luben" name="zstd-jni">
+			<revision name="1.3.8-1" status="release" pubdate="20190109081138" resolver="sbt-chain" artresolver="sbt-chain" homepage="https://github.com/luben/zstd-jni" downloaded="false" searched="false" default="false" conf="compile, runtime(*), master(compile), runtime, compile(*), master" position="17">
+				<license name="BSD 2-Clause License" url="https://opensource.org/licenses/BSD-2-Clause"/>
+				<metadata-artifact status="no" details="" size="2874" time="0" location="/root/.ivy2/cache/com.github.luben/zstd-jni/ivy-1.3.8-1.xml" searched="false" origin-is-local="false" origin-location="https://repo1.maven.org/maven2/com/github/luben/zstd-jni/1.3.8-1/zstd-jni-1.3.8-1.pom"/>
+				<caller organisation="org.apache.kafka" name="kafka-clients" conf="default, compile, runtime, master" rev="1.3.8-1" rev-constraint-default="1.3.8-1" rev-constraint-dynamic="1.3.8-1" callerrev="2.2.1"/>
+				<artifacts>
+					<artifact name="zstd-jni" type="jar" ext="jar" status="no" details="" size="3874332" time="0" location="/root/.ivy2/cache/com.github.luben/zstd-jni/jars/zstd-jni-1.3.8-1.jar">
+						<origin-location is-local="false" location="https://repo1.maven.org/maven2/com/github/luben/zstd-jni/1.3.8-1/zstd-jni-1.3.8-1.jar"/>
+					</artifact>
+				</artifacts>
+			</revision>
+		</module>
+		<module organisation="org.json4s" name="json4s-jackson_2.12">
+			<revision name="3.6.6" status="release" pubdate="20190522230932" resolver="sbt-chain" artresolver="sbt-chain" homepage="https://github.com/json4s/json4s" downloaded="false" searched="false" default="false" conf="default, compile, runtime, default(compile), master" position="12">
+				<license name="Apache-2.0" url="http://www.apache.org/licenses/LICENSE-2.0"/>
+				<metadata-artifact status="no" details="" size="2966" time="0" location="/root/.ivy2/cache/org.json4s/json4s-jackson_2.12/ivy-3.6.6.xml" searched="false" origin-is-local="false" origin-location="https://repo1.maven.org/maven2/org/json4s/json4s-jackson_2.12/3.6.6/json4s-jackson_2.12-3.6.6.pom"/>
+				<caller organisation="com.jpro" name="federation_2.12" conf="compile" rev="3.6.6" rev-constraint-default="3.6.6" rev-constraint-dynamic="3.6.6" callerrev="0.1"/>
+				<artifacts>
+					<artifact name="json4s-jackson_2.12" type="jar" ext="jar" status="no" details="" size="36175" time="0" location="/root/.ivy2/cache/org.json4s/json4s-jackson_2.12/jars/json4s-jackson_2.12-3.6.6.jar">
+						<origin-location is-local="false" location="https://repo1.maven.org/maven2/org/json4s/json4s-jackson_2.12/3.6.6/json4s-jackson_2.12-3.6.6.jar"/>
+					</artifact>
+				</artifacts>
+			</revision>
+		</module>
+		<module organisation="com.fasterxml.jackson.core" name="jackson-databind">
+			<revision name="2.9.8" status="release" pubdate="20181216055940" resolver="sbt-chain" artresolver="sbt-chain" homepage="http://github.com/FasterXML/jackson" downloaded="false" searched="false" default="false" conf="compile, runtime(*), master(compile), runtime, compile(*), master" position="13">
+				<license name="The Apache Software License, Version 2.0" url="http://www.apache.org/licenses/LICENSE-2.0.txt"/>
+				<metadata-artifact status="no" details="" size="23625" time="0" location="/root/.ivy2/cache/com.fasterxml.jackson.core/jackson-databind/ivy-2.9.8.xml" searched="false" origin-is-local="false" origin-location="https://repo1.maven.org/maven2/com/fasterxml/jackson/core/jackson-databind/2.9.8/jackson-databind-2.9.8.pom"/>
+				<caller organisation="org.json4s" name="json4s-jackson_2.12" conf="default, compile, runtime, master" rev="2.9.8" rev-constraint-default="2.9.8" rev-constraint-dynamic="2.9.8" callerrev="3.6.6"/>
+				<artifacts>
+					<artifact name="jackson-databind" type="bundle" ext="jar" status="no" details="" size="1347236" time="0" location="/root/.ivy2/cache/com.fasterxml.jackson.core/jackson-databind/bundles/jackson-databind-2.9.8.jar">
+						<origin-location is-local="false" location="https://repo1.maven.org/maven2/com/fasterxml/jackson/core/jackson-databind/2.9.8/jackson-databind-2.9.8.jar"/>
+					</artifact>
+				</artifacts>
+			</revision>
+		</module>
+		<module organisation="com.fasterxml.jackson.core" name="jackson-core">
+			<revision name="2.9.8" status="release" pubdate="20181216051934" resolver="sbt-chain" artresolver="sbt-chain" homepage="https://github.com/FasterXML/jackson-core" downloaded="false" searched="false" default="false" conf="compile, runtime(*), master(compile), runtime, compile(*), master" position="15">
+				<license name="The Apache Software License, Version 2.0" url="http://www.apache.org/licenses/LICENSE-2.0.txt"/>
+				<metadata-artifact status="no" details="" size="22913" time="0" location="/root/.ivy2/cache/com.fasterxml.jackson.core/jackson-core/ivy-2.9.8.xml" searched="false" origin-is-local="false" origin-location="https://repo1.maven.org/maven2/com/fasterxml/jackson/core/jackson-core/2.9.8/jackson-core-2.9.8.pom"/>
+				<caller organisation="com.fasterxml.jackson.core" name="jackson-databind" conf="compile, runtime" rev="2.9.8" rev-constraint-default="2.9.8" rev-constraint-dynamic="2.9.8" callerrev="2.9.8"/>
+				<artifacts>
+					<artifact name="jackson-core" type="bundle" ext="jar" status="no" details="" size="325619" time="0" location="/root/.ivy2/cache/com.fasterxml.jackson.core/jackson-core/bundles/jackson-core-2.9.8.jar">
+						<origin-location is-local="false" location="https://repo1.maven.org/maven2/com/fasterxml/jackson/core/jackson-core/2.9.8/jackson-core-2.9.8.jar"/>
+					</artifact>
+				</artifacts>
+			</revision>
+		</module>
+		<module organisation="com.fasterxml.jackson.core" name="jackson-annotations">
+			<revision name="2.9.0" status="release" pubdate="20170730115340" resolver="sbt-chain" artresolver="sbt-chain" homepage="http://github.com/FasterXML/jackson" downloaded="false" searched="false" default="false" conf="compile, runtime(*), master(compile), runtime, compile(*), master" position="14">
+				<license name="The Apache Software License, Version 2.0" url="http://www.apache.org/licenses/LICENSE-2.0.txt"/>
+				<metadata-artifact status="no" details="" size="6969" time="0" location="/root/.ivy2/cache/com.fasterxml.jackson.core/jackson-annotations/ivy-2.9.0.xml" searched="false" origin-is-local="false" origin-location="https://repo1.maven.org/maven2/com/fasterxml/jackson/core/jackson-annotations/2.9.0/jackson-annotations-2.9.0.pom"/>
+				<caller organisation="com.fasterxml.jackson.core" name="jackson-databind" conf="compile, runtime" rev="2.9.0" rev-constraint-default="2.9.0" rev-constraint-dynamic="2.9.0" callerrev="2.9.8"/>
+				<artifacts>
+					<artifact name="jackson-annotations" type="bundle" ext="jar" status="no" details="" size="66519" time="0" location="/root/.ivy2/cache/com.fasterxml.jackson.core/jackson-annotations/bundles/jackson-annotations-2.9.0.jar">
+						<origin-location is-local="false" location="https://repo1.maven.org/maven2/com/fasterxml/jackson/core/jackson-annotations/2.9.0/jackson-annotations-2.9.0.jar"/>
+					</artifact>
+				</artifacts>
+			</revision>
+		</module>
+		<module organisation="org.json4s" name="json4s-native_2.12">
+			<revision name="3.6.6" status="release" pubdate="20190522225603" resolver="sbt-chain" artresolver="sbt-chain" homepage="https://github.com/json4s/json4s" downloaded="false" searched="false" default="false" conf="default, compile, runtime, default(compile), master" position="7">
+				<license name="Apache-2.0" url="http://www.apache.org/licenses/LICENSE-2.0"/>
+				<metadata-artifact status="no" details="" size="2802" time="0" location="/root/.ivy2/cache/org.json4s/json4s-native_2.12/ivy-3.6.6.xml" searched="false" origin-is-local="false" origin-location="https://repo1.maven.org/maven2/org/json4s/json4s-native_2.12/3.6.6/json4s-native_2.12-3.6.6.pom"/>
+				<caller organisation="com.jpro" name="federation_2.12" conf="compile" rev="3.6.6" rev-constraint-default="3.6.6" rev-constraint-dynamic="3.6.6" callerrev="0.1"/>
+				<artifacts>
+					<artifact name="json4s-native_2.12" type="jar" ext="jar" status="no" details="" size="93279" time="0" location="/root/.ivy2/cache/org.json4s/json4s-native_2.12/jars/json4s-native_2.12-3.6.6.jar">
+						<origin-location is-local="false" location="https://repo1.maven.org/maven2/org/json4s/json4s-native_2.12/3.6.6/json4s-native_2.12-3.6.6.jar"/>
+					</artifact>
+				</artifacts>
+			</revision>
+		</module>
+		<module organisation="org.json4s" name="json4s-core_2.12">
+			<revision name="3.6.6" status="release" pubdate="20190522230121" resolver="sbt-chain" artresolver="sbt-chain" homepage="https://github.com/json4s/json4s" downloaded="false" searched="false" default="false" conf="compile, runtime(*), master(compile), runtime, compile(*), master" position="8">
+				<license name="Apache-2.0" url="http://www.apache.org/licenses/LICENSE-2.0"/>
+				<metadata-artifact status="no" details="" size="3094" time="0" location="/root/.ivy2/cache/org.json4s/json4s-core_2.12/ivy-3.6.6.xml" searched="false" origin-is-local="false" origin-location="https://repo1.maven.org/maven2/org/json4s/json4s-core_2.12/3.6.6/json4s-core_2.12-3.6.6.pom"/>
+				<caller organisation="org.json4s" name="json4s-jackson_2.12" conf="default, compile, runtime, master" rev="3.6.6" rev-constraint-default="3.6.6" rev-constraint-dynamic="3.6.6" callerrev="3.6.6"/>
+				<caller organisation="org.json4s" name="json4s-native_2.12" conf="default, compile, runtime, master" rev="3.6.6" rev-constraint-default="3.6.6" rev-constraint-dynamic="3.6.6" callerrev="3.6.6"/>
+				<artifacts>
+					<artifact name="json4s-core_2.12" type="jar" ext="jar" status="no" details="" size="482486" time="0" location="/root/.ivy2/cache/org.json4s/json4s-core_2.12/jars/json4s-core_2.12-3.6.6.jar">
+						<origin-location is-local="false" location="https://repo1.maven.org/maven2/org/json4s/json4s-core_2.12/3.6.6/json4s-core_2.12-3.6.6.jar"/>
+					</artifact>
+				</artifacts>
+			</revision>
+		</module>
+		<module organisation="com.thoughtworks.paranamer" name="paranamer">
+			<revision name="2.8" status="release" pubdate="20150826192928" resolver="sbt-chain" artresolver="sbt-chain" homepage="" downloaded="false" searched="false" default="false" conf="compile, runtime(*), master(compile), runtime, compile(*), master" position="11">
+				<license name="BSD" url="LICENSE.txt"/>
+				<metadata-artifact status="no" details="" size="4254" time="0" location="/root/.ivy2/cache/com.thoughtworks.paranamer/paranamer/ivy-2.8.xml" searched="false" origin-is-local="false" origin-location="https://repo1.maven.org/maven2/com/thoughtworks/paranamer/paranamer/2.8/paranamer-2.8.pom"/>
+				<caller organisation="org.json4s" name="json4s-core_2.12" conf="compile, runtime" rev="2.8" rev-constraint-default="2.8" rev-constraint-dynamic="2.8" callerrev="3.6.6"/>
+				<artifacts>
+					<artifact name="paranamer" type="bundle" ext="jar" status="no" details="" size="34654" time="0" location="/root/.ivy2/cache/com.thoughtworks.paranamer/paranamer/bundles/paranamer-2.8.jar">
+						<origin-location is-local="false" location="https://repo1.maven.org/maven2/com/thoughtworks/paranamer/paranamer/2.8/paranamer-2.8.jar"/>
+					</artifact>
+				</artifacts>
+			</revision>
+		</module>
+		<module organisation="org.json4s" name="json4s-scalap_2.12">
+			<revision name="3.6.6" status="release" pubdate="20190522231259" resolver="sbt-chain" artresolver="sbt-chain" homepage="https://github.com/json4s/json4s" downloaded="false" searched="false" default="false" conf="compile, runtime(*), master(compile), runtime, compile(*), master" position="10">
+				<license name="Apache-2.0" url="http://www.apache.org/licenses/LICENSE-2.0"/>
+				<metadata-artifact status="no" details="" size="2657" time="0" location="/root/.ivy2/cache/org.json4s/json4s-scalap_2.12/ivy-3.6.6.xml" searched="false" origin-is-local="false" origin-location="https://repo1.maven.org/maven2/org/json4s/json4s-scalap_2.12/3.6.6/json4s-scalap_2.12-3.6.6.pom"/>
+				<caller organisation="org.json4s" name="json4s-core_2.12" conf="compile, runtime" rev="3.6.6" rev-constraint-default="3.6.6" rev-constraint-dynamic="3.6.6" callerrev="3.6.6"/>
+				<artifacts>
+					<artifact name="json4s-scalap_2.12" type="jar" ext="jar" status="no" details="" size="349025" time="0" location="/root/.ivy2/cache/org.json4s/json4s-scalap_2.12/jars/json4s-scalap_2.12-3.6.6.jar">
+						<origin-location is-local="false" location="https://repo1.maven.org/maven2/org/json4s/json4s-scalap_2.12/3.6.6/json4s-scalap_2.12-3.6.6.jar"/>
+					</artifact>
+				</artifacts>
+			</revision>
+		</module>
+		<module organisation="org.json4s" name="json4s-ast_2.12">
+			<revision name="3.6.6" status="release" pubdate="20190522225031" resolver="sbt-chain" artresolver="sbt-chain" homepage="https://github.com/json4s/json4s" downloaded="false" searched="false" default="false" conf="compile, runtime(*), master(compile), runtime, compile(*), master" position="9">
+				<license name="Apache-2.0" url="http://www.apache.org/licenses/LICENSE-2.0"/>
+				<metadata-artifact status="no" details="" size="2648" time="0" location="/root/.ivy2/cache/org.json4s/json4s-ast_2.12/ivy-3.6.6.xml" searched="false" origin-is-local="false" origin-location="https://repo1.maven.org/maven2/org/json4s/json4s-ast_2.12/3.6.6/json4s-ast_2.12-3.6.6.pom"/>
+				<caller organisation="org.json4s" name="json4s-core_2.12" conf="compile, runtime" rev="3.6.6" rev-constraint-default="3.6.6" rev-constraint-dynamic="3.6.6" callerrev="3.6.6"/>
+				<artifacts>
+					<artifact name="json4s-ast_2.12" type="jar" ext="jar" status="no" details="" size="83632" time="0" location="/root/.ivy2/cache/org.json4s/json4s-ast_2.12/jars/json4s-ast_2.12-3.6.6.jar">
+						<origin-location is-local="false" location="https://repo1.maven.org/maven2/org/json4s/json4s-ast_2.12/3.6.6/json4s-ast_2.12-3.6.6.jar"/>
+					</artifact>
+				</artifacts>
+			</revision>
+		</module>
+		<module organisation="org.scala-lang" name="scala-reflect">
+			<revision name="2.12.7" status="release" pubdate="20180927043203" resolver="sbt-chain" artresolver="sbt-chain" homepage="http://www.scala-lang.org/" extra-info.apiURL="http://www.scala-lang.org/api/2.12.7/" downloaded="false" searched="false" default="false" conf="compile, runtime(*), master(compile), runtime, compile(*), master" position="6">
+				<license name="BSD 3-Clause" url="http://www.scala-lang.org/license.html"/>
+				<metadata-artifact status="no" details="" size="2812" time="0" location="/root/.ivy2/cache/org.scala-lang/scala-reflect/ivy-2.12.7.xml" searched="false" origin-is-local="false" origin-location="file:////root/.sbt/preloaded/org.scala-lang/scala-reflect/2.12.7/ivys/ivy.xml"/>
+				<caller organisation="org.mongodb.scala" name="mongo-scala-driver_2.12" conf="default, compile, runtime, master" rev="2.12.7" rev-constraint-default="2.12.7" rev-constraint-dynamic="2.12.7" callerrev="2.6.0"/>
+				<caller organisation="org.mongodb.scala" name="mongo-scala-bson_2.12" conf="compile, runtime" rev="2.12.7" rev-constraint-default="2.12.7" rev-constraint-dynamic="2.12.7" callerrev="2.6.0"/>
+				<caller organisation="org.apache.logging.log4j" name="log4j-api-scala_2.12" conf="default, compile, runtime, master" rev="2.12.7" rev-constraint-default="2.12.7" rev-constraint-dynamic="2.12.7" callerrev="11.0"/>
+				<artifacts>
+					<artifact name="scala-reflect" type="jar" ext="jar" status="no" details="" size="3616372" time="0" location="/root/.ivy2/cache/org.scala-lang/scala-reflect/jars/scala-reflect-2.12.7.jar">
+						<origin-location is-local="false" location="file:////root/.sbt/preloaded/org.scala-lang/scala-reflect/2.12.7/jars/scala-reflect.jar"/>
+					</artifact>
+				</artifacts>
+			</revision>
+		</module>
+		<module organisation="org.apache.logging.log4j" name="log4j-api-scala_2.12">
+			<revision name="11.0" status="release" pubdate="20170717002851" resolver="sbt-chain" artresolver="sbt-chain" homepage="" downloaded="false" searched="false" default="false" conf="default, compile, runtime, default(compile), master" position="5">
+				<metadata-artifact status="no" details="" size="7565" time="0" location="/root/.ivy2/cache/org.apache.logging.log4j/log4j-api-scala_2.12/ivy-11.0.xml" searched="false" origin-is-local="false" origin-location="https://repo1.maven.org/maven2/org/apache/logging/log4j/log4j-api-scala_2.12/11.0/log4j-api-scala_2.12-11.0.pom"/>
+				<caller organisation="com.jpro" name="federation_2.12" conf="compile" rev="11.0" rev-constraint-default="11.0" rev-constraint-dynamic="11.0" callerrev="0.1"/>
+				<artifacts>
+					<artifact name="log4j-api-scala_2.12" type="jar" ext="jar" status="no" details="" size="315597" time="0" location="/root/.ivy2/cache/org.apache.logging.log4j/log4j-api-scala_2.12/jars/log4j-api-scala_2.12-11.0.jar">
+						<origin-location is-local="false" location="https://repo1.maven.org/maven2/org/apache/logging/log4j/log4j-api-scala_2.12/11.0/log4j-api-scala_2.12-11.0.jar"/>
+					</artifact>
+				</artifacts>
+			</revision>
+		</module>
+		<module organisation="org.apache.logging.log4j" name="log4j-core">
+			<revision name="2.12.0" status="release" pubdate="20190626113754" resolver="sbt-chain" artresolver="sbt-chain" homepage="" downloaded="false" searched="false" default="false" conf="default, compile, runtime, default(compile), master" position="4">
+				<license name="Apache License, Version 2.0" url="https://www.apache.org/licenses/LICENSE-2.0.txt"/>
+				<metadata-artifact status="no" details="" size="36023" time="0" location="/root/.ivy2/cache/org.apache.logging.log4j/log4j-core/ivy-2.12.0.xml" searched="false" origin-is-local="false" origin-location="https://repo1.maven.org/maven2/org/apache/logging/log4j/log4j-core/2.12.0/log4j-core-2.12.0.pom"/>
+				<caller organisation="com.jpro" name="federation_2.12" conf="compile" rev="2.12.0" rev-constraint-default="2.12.0" rev-constraint-dynamic="2.12.0" callerrev="0.1"/>
+				<artifacts>
+					<artifact name="log4j-core" type="jar" ext="jar" status="no" details="" size="1667269" time="0" location="/root/.ivy2/cache/org.apache.logging.log4j/log4j-core/jars/log4j-core-2.12.0.jar">
+						<origin-location is-local="false" location="https://repo1.maven.org/maven2/org/apache/logging/log4j/log4j-core/2.12.0/log4j-core-2.12.0.jar"/>
+					</artifact>
+				</artifacts>
+			</revision>
+		</module>
+		<module organisation="org.apache.logging.log4j" name="log4j-api">
+			<revision name="2.12.0" status="release" pubdate="20190626113630" resolver="sbt-chain" artresolver="sbt-chain" homepage="" downloaded="false" searched="false" default="false" conf="default, compile, runtime, default(compile), master" position="3">
+				<license name="Apache License, Version 2.0" url="https://www.apache.org/licenses/LICENSE-2.0.txt"/>
+				<metadata-artifact status="no" details="" size="30573" time="0" location="/root/.ivy2/cache/org.apache.logging.log4j/log4j-api/ivy-2.12.0.xml" searched="false" origin-is-local="false" origin-location="https://repo1.maven.org/maven2/org/apache/logging/log4j/log4j-api/2.12.0/log4j-api-2.12.0.pom"/>
+				<caller organisation="com.jpro" name="federation_2.12" conf="compile" rev="2.12.0" rev-constraint-default="2.12.0" rev-constraint-dynamic="2.12.0" callerrev="0.1"/>
+				<artifacts>
+					<artifact name="log4j-api" type="jar" ext="jar" status="no" details="" size="273454" time="0" location="/root/.ivy2/cache/org.apache.logging.log4j/log4j-api/jars/log4j-api-2.12.0.jar">
+						<origin-location is-local="false" location="https://repo1.maven.org/maven2/org/apache/logging/log4j/log4j-api/2.12.0/log4j-api-2.12.0.jar"/>
+					</artifact>
+				</artifacts>
+			</revision>
+		</module>
+		<module organisation="org.slf4j" name="slf4j-nop">
+			<revision name="1.7.26" status="release" pubdate="20190219071709" resolver="sbt-chain" artresolver="sbt-chain" homepage="http://www.slf4j.org" downloaded="false" searched="false" default="false" conf="default, compile, runtime, default(compile), master" position="1">
+				<license name="MIT License" url="http://www.opensource.org/licenses/mit-license.php"/>
+				<metadata-artifact status="no" details="" size="5228" time="0" location="/root/.ivy2/cache/org.slf4j/slf4j-nop/ivy-1.7.26.xml" searched="false" origin-is-local="false" origin-location="https://repo1.maven.org/maven2/org/slf4j/slf4j-nop/1.7.26/slf4j-nop-1.7.26.pom"/>
+				<caller organisation="com.jpro" name="federation_2.12" conf="compile" rev="1.7.26" rev-constraint-default="1.7.26" rev-constraint-dynamic="1.7.26" callerrev="0.1"/>
+				<artifacts>
+					<artifact name="slf4j-nop" type="jar" ext="jar" status="no" details="" size="4010" time="0" location="/root/.ivy2/cache/org.slf4j/slf4j-nop/jars/slf4j-nop-1.7.26.jar">
+						<origin-location is-local="false" location="https://repo1.maven.org/maven2/org/slf4j/slf4j-nop/1.7.26/slf4j-nop-1.7.26.jar"/>
+					</artifact>
+				</artifacts>
+			</revision>
+		</module>
+		<module organisation="org.slf4j" name="slf4j-api">
+			<revision name="1.7.26" status="release" pubdate="20190219071602" resolver="sbt-chain" artresolver="sbt-chain" homepage="http://www.slf4j.org" downloaded="false" searched="false" default="false" conf="compile, runtime(*), master(compile), runtime, compile(*), master" position="2">
+				<license name="MIT License" url="http://www.opensource.org/licenses/mit-license.php"/>
+				<metadata-artifact status="no" details="" size="5294" time="0" location="/root/.ivy2/cache/org.slf4j/slf4j-api/ivy-1.7.26.xml" searched="false" origin-is-local="false" origin-location="https://repo1.maven.org/maven2/org/slf4j/slf4j-api/1.7.26/slf4j-api-1.7.26.pom"/>
+				<caller organisation="org.apache.kafka" name="kafka-clients" conf="default, compile, runtime, master" rev="1.7.25" rev-constraint-default="1.7.25" rev-constraint-dynamic="1.7.25" callerrev="2.2.1"/>
+				<caller organisation="org.slf4j" name="slf4j-nop" conf="default, compile, runtime, master" rev="1.7.26" rev-constraint-default="1.7.26" rev-constraint-dynamic="1.7.26" callerrev="1.7.26"/>
+				<artifacts>
+					<artifact name="slf4j-api" type="jar" ext="jar" status="no" details="" size="41139" time="0" location="/root/.ivy2/cache/org.slf4j/slf4j-api/jars/slf4j-api-1.7.26.jar">
+						<origin-location is-local="false" location="https://repo1.maven.org/maven2/org/slf4j/slf4j-api/1.7.26/slf4j-api-1.7.26.jar"/>
+					</artifact>
+				</artifacts>
+			</revision>
+			<revision name="1.7.25" evicted="latest-revision" evicted-reason="" downloaded="false" searched="false" conf="compile, runtime(*), master(compile), runtime, compile(*), master" position="-1">
+				<evicted-by rev="1.7.26"/>
+				<caller organisation="org.apache.kafka" name="kafka-clients" conf="default, compile, runtime, master" rev="1.7.25" rev-constraint-default="1.7.25" rev-constraint-dynamic="1.7.25" callerrev="2.2.1"/>
+				<artifacts>
+				</artifacts>
+			</revision>
+		</module>
+		<module organisation="org.scala-lang" name="scala-library">
+			<revision name="2.12.7" status="release" pubdate="20180927043542" resolver="sbt-chain" artresolver="sbt-chain" homepage="http://www.scala-lang.org/" extra-info.apiURL="http://www.scala-lang.org/api/2.12.7/" downloaded="false" searched="false" default="false" conf="default, compile, runtime(*), master(compile), runtime, default(compile), compile(*), master" position="0">
+				<license name="BSD 3-Clause" url="http://www.scala-lang.org/license.html"/>
+				<metadata-artifact status="no" details="" size="2640" time="0" location="/root/.ivy2/cache/org.scala-lang/scala-library/ivy-2.12.7.xml" searched="false" origin-is-local="false" origin-location="file:////root/.sbt/preloaded/org.scala-lang/scala-library/2.12.7/ivys/ivy.xml"/>
+				<caller organisation="org.json4s" name="json4s-core_2.12" conf="compile, runtime" rev="2.12.7" rev-constraint-default="2.12.7" rev-constraint-dynamic="2.12.7" callerrev="3.6.6"/>
+				<caller organisation="org.json4s" name="json4s-scalap_2.12" conf="compile, runtime" rev="2.12.7" rev-constraint-default="2.12.7" rev-constraint-dynamic="2.12.7" callerrev="3.6.6"/>
+				<caller organisation="org.mongodb.scala" name="mongo-scala-driver_2.12" conf="default, compile, runtime, master" rev="2.12.7" rev-constraint-default="2.12.7" rev-constraint-dynamic="2.12.7" callerrev="2.6.0"/>
+				<caller organisation="org.json4s" name="json4s-jackson_2.12" conf="default, compile, runtime, master" rev="2.12.7" rev-constraint-default="2.12.7" rev-constraint-dynamic="2.12.7" callerrev="3.6.6"/>
+				<caller organisation="org.json4s" name="json4s-ast_2.12" conf="compile, runtime" rev="2.12.7" rev-constraint-default="2.12.7" rev-constraint-dynamic="2.12.7" callerrev="3.6.6"/>
+				<caller organisation="com.jpro" name="federation_2.12" conf="compile" rev="2.12.7" rev-constraint-default="2.12.7" rev-constraint-dynamic="2.12.7" callerrev="0.1"/>
+				<caller organisation="org.scala-lang" name="scala-reflect" conf="compile, runtime" rev="2.12.7" rev-constraint-default="2.12.7" rev-constraint-dynamic="2.12.7" callerrev="2.12.7"/>
+				<caller organisation="org.mongodb.scala" name="mongo-scala-bson_2.12" conf="compile, runtime" rev="2.12.7" rev-constraint-default="2.12.7" rev-constraint-dynamic="2.12.7" callerrev="2.6.0"/>
+				<caller organisation="org.apache.logging.log4j" name="log4j-api-scala_2.12" conf="default, compile, runtime, master" rev="2.12.7" rev-constraint-default="2.12.7" rev-constraint-dynamic="2.12.7" callerrev="11.0"/>
+				<caller organisation="org.json4s" name="json4s-native_2.12" conf="default, compile, runtime, master" rev="2.12.7" rev-constraint-default="2.12.7" rev-constraint-dynamic="2.12.7" callerrev="3.6.6"/>
+				<artifacts>
+					<artifact name="scala-library" type="jar" ext="jar" status="no" details="" size="5277511" time="0" location="/root/.ivy2/cache/org.scala-lang/scala-library/jars/scala-library-2.12.7.jar">
+						<origin-location is-local="false" location="file:////root/.sbt/preloaded/org.scala-lang/scala-library/2.12.7/jars/scala-library.jar"/>
+					</artifact>
+				</artifacts>
+			</revision>
+		</module>
+	</dependencies>
+</ivy-report>

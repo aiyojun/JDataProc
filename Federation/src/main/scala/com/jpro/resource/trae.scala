@@ -29,6 +29,8 @@ object trae {
   lazy val okGenCompose   : String = props | "travel.gen.compose.key"
   lazy val okGenAuto      : String = props | "travel.gen.auto.key"
   lazy val ovGenAuto      : String = props | "travel.gen.auto.val"
+  lazy val okGenAuto2     : String = props | "travel.gen.auto2.key"
+  lazy val ovGenAuto2     : String = props | "travel.gen.auto2.val"
   lazy val okGenStation   : String = props | "travel.gen.station.name.key"
   lazy val okGenColor     : String = props | "travel.gen.color.key"
   lazy val okGenMedia     : String = props | "travel.gen.media.key"

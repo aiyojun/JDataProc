@@ -29,7 +29,7 @@ class KafkaProxy(q: ArrayBlockingQueue[BaseBlock]) extends Thread with Logging {
     logger.info("\033[33;1mKafkaProxy::run\033[0m")
     while (Context.working) {
       import java.time.Duration
-      val records = consumer.poll(Duration.ofMillis(java.lang.Integer.parseInt(Context | ("kafka.link.timeout"))))
+      val records = consumer.poll(Duration.ofMillis(java.lang.Integer.parseInt(Context | "kafka.link.timeout")))
       if (records.count != 0) {
         records.forEach(record => {
           try {
