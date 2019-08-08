@@ -34,6 +34,10 @@ public class Dispatcher extends Thread {
             }
             if (msg == null) continue;
 
+            if (msg.head.equals("exit")) {
+                break;
+            }
+
             JSONObject jo = null;
             try {
                 jo = JSON.parseObject(msg.body);
@@ -67,7 +71,7 @@ public class Dispatcher extends Thread {
                 log.error("( {} ) process error - {}", _id, re);
             }
         }
-        log.info("( {} ) exited process loop", _id);
+        log.info("( {} ) exited Dispatcher process loop", _id);
     }
 
 }

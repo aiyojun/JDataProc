@@ -7,21 +7,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class MongoUtil {
-    interface Extract<F, T> {
-        F extract(T x);
-    }
 
-    public static   extract(MongoCursor<T> cursor, Extract e) {
-
-    }
-
-    public static List<Document> extract(MongoCursor<Document> cursor, f) {
+    public static List<Document> extract(MongoCursor<Document> cursor) {
         List<Document> _r = new ArrayList<>();
         while (cursor.hasNext()) {
             Document ele = cursor.next();
-            f(ele)
-//            _r.add(ele);
+            _r.add(ele);
         }
         return _r;
     }
+
 }

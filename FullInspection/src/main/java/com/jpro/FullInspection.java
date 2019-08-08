@@ -8,6 +8,9 @@ import sun.misc.Signal;
 
 import java.util.concurrent.ArrayBlockingQueue;
 
+import static com.jpro.Unique.Utils.gtv;
+import static com.jpro.Unique.elfin;
+
 @Log4j2
 public class FullInspection {
 	public static void test() {
@@ -27,7 +30,7 @@ public class FullInspection {
 	}
 
 	public static void main(String[] args) {
-		test();
+//		test();
 		System.out.println(
 			" ____  ____  ____  ____  ____    __   ____  ____  _____  _  _ \n" +
 			"( ___)( ___)(  _ \\( ___)(  _ \\  /__\\ (_  _)(_  _)(  _  )( \\( )\n" +
@@ -37,26 +40,13 @@ public class FullInspection {
 		log.info("program FullInspection start ...");
 		Unique.initializeAllResource(args);
 
-		ArrayBlockingQueue<Msg> sharedQueue = new ArrayBlockingQueue<>(10);
-
 		Signal.handle(new Signal("INT"), sig -> {
 			log.info("recv INT sig");
-
-			try {
-				sharedQueue.put(new Msg("", "1243aa"));
-				sharedQueue.put(new Msg("", "{\"key\":12}"));
-				Thread.sleep(1000);
-				sharedQueue.put(new Msg("exit", "avsdfvasdf"));
-				Unique.working.set(false);
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-			}
+			Unique.recycleAllResource();
 		});
 
 		Unique.working.set(true);
-		Dispatcher dispatcher = new Dispatcher(new TravelActor(), sharedQueue, "travel");
-		dispatcher.run();
 
-		Unique.recycleAllResource();
+		new Server().prepare().start();
 	}
 }
