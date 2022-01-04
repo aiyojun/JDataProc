@@ -6,9 +6,9 @@ version := "0.1"
 
 libraryDependencies += "org.slf4j" % "slf4j-nop" % "1.7.26"
 
-libraryDependencies += "org.apache.logging.log4j" % "log4j-api" % "2.12.0"
+libraryDependencies += "org.apache.logging.log4j" % "log4j-api" % "2.17.0"
 
-libraryDependencies += "org.apache.logging.log4j" % "log4j-core" % "2.12.0"
+libraryDependencies += "org.apache.logging.log4j" % "log4j-core" % "2.17.0"
 
 libraryDependencies += "org.apache.logging.log4j" %% "log4j-api-scala" % "11.0"
 
